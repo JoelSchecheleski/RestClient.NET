@@ -1,0 +1,66 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.22129.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RestClient.NET", "RestClient.NET\RestClient.NET.csproj", "{8883237E-9602-432D-A8C9-F7BE1BECEE99}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Examples", "Examples", "{4BDBB434-95B0-456C-9FCF-D41794C91F20}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "UnitTests", "UnitTests", "{302BEC35-92C0-499D-B1A8-953FD8364617}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RestClient.NET_Tests", "UnitTests\RestClient.NET_Tests\RestClient.NET_Tests.csproj", "{6930D89F-BC2E-4592-9B14-75AC96A2A7B9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenWeatherMapAPI", "Examples\OpenWeatherMapAPI\OpenWeatherMapAPI.csproj", "{9F738374-BBF9-4960-93DC-E9DFA751B233}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Debug|ARM = Debug|ARM
+		Debug|x64 = Debug|x64
+		Debug|x86 = Debug|x86
+		Release|Any CPU = Release|Any CPU
+		Release|ARM = Release|ARM
+		Release|x64 = Release|x64
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{8883237E-9602-432D-A8C9-F7BE1BECEE99}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8883237E-9602-432D-A8C9-F7BE1BECEE99}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8883237E-9602-432D-A8C9-F7BE1BECEE99}.Debug|ARM.ActiveCfg = Debug|Any CPU
+		{8883237E-9602-432D-A8C9-F7BE1BECEE99}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{8883237E-9602-432D-A8C9-F7BE1BECEE99}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{8883237E-9602-432D-A8C9-F7BE1BECEE99}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8883237E-9602-432D-A8C9-F7BE1BECEE99}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8883237E-9602-432D-A8C9-F7BE1BECEE99}.Release|ARM.ActiveCfg = Release|Any CPU
+		{8883237E-9602-432D-A8C9-F7BE1BECEE99}.Release|x64.ActiveCfg = Release|Any CPU
+		{8883237E-9602-432D-A8C9-F7BE1BECEE99}.Release|x86.ActiveCfg = Release|Any CPU
+		{6930D89F-BC2E-4592-9B14-75AC96A2A7B9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6930D89F-BC2E-4592-9B14-75AC96A2A7B9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6930D89F-BC2E-4592-9B14-75AC96A2A7B9}.Debug|ARM.ActiveCfg = Debug|Any CPU
+		{6930D89F-BC2E-4592-9B14-75AC96A2A7B9}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{6930D89F-BC2E-4592-9B14-75AC96A2A7B9}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{6930D89F-BC2E-4592-9B14-75AC96A2A7B9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6930D89F-BC2E-4592-9B14-75AC96A2A7B9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6930D89F-BC2E-4592-9B14-75AC96A2A7B9}.Release|ARM.ActiveCfg = Release|Any CPU
+		{6930D89F-BC2E-4592-9B14-75AC96A2A7B9}.Release|x64.ActiveCfg = Release|Any CPU
+		{6930D89F-BC2E-4592-9B14-75AC96A2A7B9}.Release|x86.ActiveCfg = Release|Any CPU
+		{9F738374-BBF9-4960-93DC-E9DFA751B233}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9F738374-BBF9-4960-93DC-E9DFA751B233}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9F738374-BBF9-4960-93DC-E9DFA751B233}.Debug|ARM.ActiveCfg = Debug|Any CPU
+		{9F738374-BBF9-4960-93DC-E9DFA751B233}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{9F738374-BBF9-4960-93DC-E9DFA751B233}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{9F738374-BBF9-4960-93DC-E9DFA751B233}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9F738374-BBF9-4960-93DC-E9DFA751B233}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9F738374-BBF9-4960-93DC-E9DFA751B233}.Release|ARM.ActiveCfg = Release|Any CPU
+		{9F738374-BBF9-4960-93DC-E9DFA751B233}.Release|x64.ActiveCfg = Release|Any CPU
+		{9F738374-BBF9-4960-93DC-E9DFA751B233}.Release|x86.ActiveCfg = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{6930D89F-BC2E-4592-9B14-75AC96A2A7B9} = {302BEC35-92C0-499D-B1A8-953FD8364617}
+		{9F738374-BBF9-4960-93DC-E9DFA751B233} = {4BDBB434-95B0-456C-9FCF-D41794C91F20}
+	EndGlobalSection
+EndGlobal
