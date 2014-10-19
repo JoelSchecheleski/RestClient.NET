@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace SkaCahToa.Rest.Models
+﻿namespace SkaCahToa.Rest.Models
 {
-    public class RestErrorResult
+    public class RestErrorResult : RestResult
     {
     }
 }

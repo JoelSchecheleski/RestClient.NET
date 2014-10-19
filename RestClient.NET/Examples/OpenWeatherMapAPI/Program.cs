@@ -1,15 +1,12 @@
 ﻿using OpenWeatherMap.RestAPI;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace OpenWeatherMap
 {
-    class Program
+    internal class Program
     {
-        static void Main(string[] args)
+        private static void Main(string[] args)
         {
             //Get our API Class.
             OpenWeatherMapAPI api = new OpenWeatherMapAPI();

@@ -9,7 +9,9 @@ namespace OpenWeatherMap.RestAPI
 {
     public class OpenWeatherMapAPI : RestClientBase
     {
-        public OpenWeatherMapAPI() : base(DataTypes.JSON) { }
+        public OpenWeatherMapAPI() : base(DataTypes.JSON)
+        {
+        }
 
         protected override string Url
         {
@@ -51,17 +53,19 @@ namespace OpenWeatherMap.RestAPI
         {
             [JsonProperty("name")]
             public string Name { get; set; }
+
             [JsonProperty("dt")]
             public int TimeStamp { get; set; }
+
             [JsonProperty("id")]
             public int ID { get; set; }
+
             [JsonProperty("cod")]
             public int Cod { get; set; }
         }
 
         protected class WeatherErrorResult : RestErrorResult
         {
-
         }
     }
 }

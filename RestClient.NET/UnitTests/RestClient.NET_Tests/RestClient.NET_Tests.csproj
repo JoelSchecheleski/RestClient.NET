@@ -53,10 +53,12 @@
     <Compile Include="Extensions\DictionaryExTests.cs" />
     <Compile Include="Models\Attributes\SegmentDefTests.cs" />
     <Compile Include="Models\Attributes\ParameterDefTests.cs" />
+    <Compile Include="Models\RestRequestTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RestClientBaseTests.cs" />
     <Compile Include="Serializers\XmlRestDataSerializerTests.cs" />
     <Compile Include="Serializers\JsonRestDataSerializerTests.cs" />
+    <Compile Include="Web\RestUrlTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\RestClient.NET\RestClient.NET.csproj">

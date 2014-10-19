@@ -14,6 +14,17 @@ $RECYCLE.BIN/
 *.msm
 *.msp
 
+#bin and obj folders
+RestClient.NET/Packages/
+RestClient.NET/RestClient.NET.sln.ide/
+RestClient.NET/TestResults/
+RestClient.NET/Examples/OpenWeatherMapAPI/bin/
+RestClient.NET/Examples/OpenWeatherMapAPI/obj/
+RestClient.NET/UnitTests/RestClient.NET_Tests/bin/
+RestClient.NET/UnitTests/RestClient.NET_Tests/obj/
+RestClient.NET/RestClient.NET/bin/
+RestClient.NET/RestClient.NET/obj/
+
 # =========================
 # Operating System Files
 # =========================

@@ -23,7 +23,7 @@ namespace SkaCahToa.Rest.Tests.Extensions
 
             testData.Add("2", "v2");
 
-            expectedResult += "&2=v2";
+            expectedResult = "2=v2&param=Value";
 
             Assert.AreEqual(expectedResult, testData.ToQueryString());
         }

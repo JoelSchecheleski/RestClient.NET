@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SkaCahToa.Rest.Models.Attributes
 {
@@ -15,6 +11,7 @@ namespace SkaCahToa.Rest.Models.Attributes
     public abstract class UrlDefinitionBase : Attribute
     {
         public UrlDefinitionDataTypes Type { get; set; }
+
         public string Value { get; set; }
 
         public UrlDefinitionBase(UrlDefinitionDataTypes type, string value)

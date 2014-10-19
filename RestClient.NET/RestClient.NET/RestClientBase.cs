@@ -1,12 +1,10 @@
-﻿using SkaCahToa.Rest.Extensions;
+﻿using SkaCahToa.Rest.Exceptions;
 using SkaCahToa.Rest.Models;
-using SkaCahToa.Rest.Models.Attributes;
 using SkaCahToa.Rest.Serializers;
-using System.Collections.Generic;
+using SkaCahToa.Rest.Web;
+using System;
 using System.IO;
-using System.Linq;
 using System.Net.Http;
-using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -21,16 +19,19 @@ namespace SkaCahToa.Rest
         }
 
         #region Constructors
+
         public RestClientBase(DataTypes dataType)
         {
-            switch(dataType)
+            switch (dataType)
             {
                 case DataTypes.JSON:
                     DataSerializer = new JsonRestDataSerializer();
                     break;
+
                 case DataTypes.XML:
                     DataSerializer = new XmlRestDataSerializer();
                     break;
+
                 default:
                     throw new Exceptions.RestHelperException("DataType Not Supported.");
             }
@@ -42,6 +43,7 @@ namespace SkaCahToa.Rest
                 throw new Exceptions.RestHelperException("Serializer cannot be null");
             DataSerializer = serializer;
         }
+
         #endregion Constructors
 
         protected RestErrorResult LastError { get; private set; }
@@ -77,13 +79,13 @@ namespace SkaCahToa.Rest
                 throw new Exceptions.RestHelperException("Http Method Type Not Supported");
 
             return await SendRequestAsync<ResultType, RequestType, ErrorType>(
-                BuildUrlFromModel(data),
+                data.GetModelURL(Url),
                 type,
                 (type != HttpMethod.Get ? data : null)
             );
         }
 
-        private async Task<ResultType> SendRequestAsync<ResultType, RequestType, ErrorType>(string url, HttpMethod methodType, RequestType data = null)
+        private async Task<ResultType> SendRequestAsync<ResultType, RequestType, ErrorType>(RestUrl url, HttpMethod methodType, RequestType data = null)
             where ResultType : RestResult
             where RequestType : RestRequest
             where ErrorType : RestErrorResult
@@ -91,7 +93,7 @@ namespace SkaCahToa.Rest
             HttpClient hc = new HttpClient();
             hc = SetupCreds(hc);
 
-            HttpRequestMessage request = new HttpRequestMessage(methodType, url);
+            HttpRequestMessage request = new HttpRequestMessage(methodType, url.ToString());
 
             if (data != null)
             {
@@ -104,47 +106,31 @@ namespace SkaCahToa.Rest
             }
 
             HttpResponseMessage response = await hc.SendAsync(request);
-            
-            return DataSerializer.FromDataType<ResultType>(await response.Content.ReadAsStringAsync());
-        }
 
-        private string BuildUrlFromModel(RestRequest model)
-        {
-            Dictionary<int, string> segments = new Dictionary<int, string>();
-            Dictionary<string, string> parms = new Dictionary<string, string>();
-            TypeInfo ti = model.GetType().GetTypeInfo();
-            string url = Url.EndsWith("/") ? Url : (Url + "/");
-
-            foreach (UrlDefinitionBase def in ti.GetCustomAttributes()
-                .Where(a => a is UrlDefinitionBase)
-                .Select(a => (UrlDefinitionBase)a))
+            if (response.IsSuccessStatusCode)
             {
-                switch (def.Type)
+                try
                 {
-                    case UrlDefinitionDataTypes.Static:
-                        if (def is SegmentDef)
-                            segments.Add(((SegmentDef)def).Order, ((SegmentDef)def).Value);
-                        else if (def is ParameterDef)
-                            parms.Add(((ParameterDef)def).Key, ((ParameterDef)def).Value);
-                        break;
-                    case UrlDefinitionDataTypes.Data:
-                        string value = model.GetType()
-                                .GetRuntimeProperties()
-                                .Single(s => s.Name == def.Value)
-                                .GetValue(model)
-                                .ToString();
-                        if (def is SegmentDef)
-                            segments.Add(((SegmentDef)def).Order, value);
-                        else if (def is ParameterDef)
-                            parms.Add(((ParameterDef)def).Key, value);
-                        break;
-                    default:
-                        throw new Exceptions.RestHelperException("Segment Type Not Supported.");
+                    return DataSerializer.FromDataType<ResultType>(await response.Content.ReadAsStringAsync());
+                }
+                catch (Exception e)
+                {
+                    throw e;
                 }
             }
+            else
+            {
+                try
+                {
+                    ErrorType error = DataSerializer.FromDataType<ErrorType>(await response.Content.ReadAsStringAsync());
 
-            url += string.Join("/", segments.OrderBy(s => s.Key).Select(s => s.Value.Trim('/')));
-            return url + "?" + parms.ToQueryString();
+                    throw new RestErrorResponseException(error, "request returned :" + response.StatusCode.ToString());
+                }
+                catch (Exception e)
+                {
+                    throw e;
+                }
+            }
         }
     }
 }

@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SkaCahToa.Rest.Extensions
 {
@@ -12,7 +10,7 @@ namespace SkaCahToa.Rest.Extensions
         {
             List<string> ret = new List<string>();
 
-            foreach(KeyValuePair<string, string> pair in dictionary)
+            foreach (KeyValuePair<string, string> pair in dictionary.OrderBy(p => p.Key))
             {
                 ret.Add(Uri.EscapeDataString(pair.Key) + "=" + Uri.EscapeDataString(pair.Value));
             }

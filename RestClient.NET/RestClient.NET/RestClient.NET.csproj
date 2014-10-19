@@ -57,6 +57,7 @@
     <Compile Include="Serializers\JsonRestDataSerializer.cs" />
     <Compile Include="Serializers\IRestDataSerializer.cs" />
     <Compile Include="Serializers\XmlRestDataSerializer.cs" />
+    <Compile Include="Web\RestUrl.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Newtonsoft.Json">
