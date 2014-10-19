@@ -38,7 +38,7 @@ namespace SkaCahToa.Rest.Models
                         break;
 
                     default:
-                        throw new Exceptions.RestHelperException("Segment Type Not Supported.");
+                        throw new Exceptions.RestClientDotNetException("Segment Type Not Supported.");
                 }
             }
 

@@ -33,14 +33,14 @@ namespace SkaCahToa.Rest
                     break;
 
                 default:
-                    throw new Exceptions.RestHelperException("DataType Not Supported.");
+                    throw new Exceptions.RestClientDotNetException("DataType Not Supported.");
             }
         }
 
         public RestClientBase(IRestDataSerializer serializer)
         {
             if (serializer == null)
-                throw new Exceptions.RestHelperException("Serializer cannot be null");
+                throw new Exceptions.RestClientDotNetException("Serializer cannot be null");
             DataSerializer = serializer;
         }
 
@@ -76,7 +76,7 @@ namespace SkaCahToa.Rest
             else if (data is RestGetRequest)
                 type = HttpMethod.Get;
             else
-                throw new Exceptions.RestHelperException("Http Method Type Not Supported");
+                throw new Exceptions.RestClientDotNetException("Http Method Type Not Supported");
 
             return await SendRequestAsync<ResultType, RequestType, ErrorType>(
                 data.GetModelURL(Url),

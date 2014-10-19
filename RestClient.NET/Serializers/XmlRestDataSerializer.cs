@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using SkaCahToa.Rest.Exceptions;
 using System.IO;
 using System.Text;
 using System.Xml.Linq;
@@ -9,14 +10,12 @@ namespace SkaCahToa.Rest.Serializers
     {
         public override string ToDataType<RestRequestType>(RestRequestType model)
         {
-            XDocument x = JsonConvert.DeserializeXNode(base.ToDataType<RestRequestType>(model));
-            return XmlToString(x);
+            throw new RestClientDotNetException("XML isn't supported yet.");
         }
 
         public override RestResultType FromDataType<RestResultType>(string data)
         {
-            XDocument x = XDocument.Parse(data);
-            return base.FromDataType<RestResultType>(JsonConvert.SerializeXNode(null));
+            throw new RestClientDotNetException("XML isn't supported yet.");
         }
 
         private string XmlToString(XDocument doc)

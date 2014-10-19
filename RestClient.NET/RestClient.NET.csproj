@@ -42,7 +42,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Exceptions\RestErrorResponseException.cs" />
-    <Compile Include="Exceptions\RestHelperException.cs" />
+    <Compile Include="Exceptions\RestClientDotNetException.cs" />
     <Compile Include="Extensions\DictionaryEx.cs" />
     <Compile Include="Models\Attributes\ParameterDef.cs" />
     <Compile Include="Models\Attributes\SegmentDef.cs" />

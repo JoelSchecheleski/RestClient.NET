@@ -2,7 +2,7 @@
 
 namespace SkaCahToa.Rest.Exceptions
 {
-    public class RestErrorResponseException : RestHelperException
+    public class RestErrorResponseException : RestClientDotNetException
     {
         public RestErrorResult Error { get; private set; }
 
