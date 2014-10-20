@@ -89,18 +89,18 @@ namespace SkaCahToa.Rest.Tests
                 );
             }
 
-            protected async override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, System.Threading.CancellationToken cancellationToken)
+            protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, System.Threading.CancellationToken cancellationToken)
             {
                 if (MockedResponses.ContainsKey(request.RequestUri))
                 {
-                    return MockedResponses[request.RequestUri];
+                    return Task.FromResult(MockedResponses[request.RequestUri]);
                 }
                 else
                 {
-                    return new HttpResponseMessage(HttpStatusCode.NotFound)
+                    return Task.FromResult(new HttpResponseMessage(HttpStatusCode.NotFound)
                     {
                         RequestMessage = request
-                    };
+                    });
                 }
             }
 
