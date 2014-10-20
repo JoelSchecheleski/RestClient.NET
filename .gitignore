@@ -24,6 +24,8 @@ UnitTests/RestClient.NET_Tests/bin/
 UnitTests/RestClient.NET_Tests/obj/
 RestClient.NET/bin/
 RestClient.NET/obj/
+*.suo
+*.user
 
 # =========================
 # Operating System Files
