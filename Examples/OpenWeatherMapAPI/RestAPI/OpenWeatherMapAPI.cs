@@ -4,6 +4,7 @@ using SkaCahToa.Rest.Models;
 using SkaCahToa.Rest.Models.Attributes;
 using System.Net.Http;
 using System.Threading.Tasks;
+using System.Xml.Serialization;
 
 namespace OpenWeatherMap.RestAPI
 {
@@ -51,16 +52,20 @@ namespace OpenWeatherMap.RestAPI
 
         public class WeatherResult : RestResult
         {
-            [JsonProperty("name")]
+			[XmlElement("name")]
+			[JsonProperty("name")]
             public string Name { get; set; }
 
-            [JsonProperty("dt")]
+			[XmlElement("dt")]
+			[JsonProperty("dt")]
             public int TimeStamp { get; set; }
 
-            [JsonProperty("id")]
+			[XmlElement("id")]
+			[JsonProperty("id")]
             public int ID { get; set; }
 
-            [JsonProperty("cod")]
+			[XmlElement("cod")]
+			[JsonProperty("cod")]
             public int Cod { get; set; }
         }
 

@@ -3,29 +3,30 @@ using SkaCahToa.Rest.Exceptions;
 using System.IO;
 using System.Text;
 using System.Xml.Linq;
+using System.Xml.Serialization;
 
 namespace SkaCahToa.Rest.Serializers
 {
     public class XmlRestDataSerializer : JsonRestDataSerializer
-    {
-        public override string ToDataType<RestRequestType>(RestRequestType model)
-        {
-            throw new RestClientDotNetException("XML isn't supported yet.");
+	{
+		public override string ToDataType<RestRequestType>(RestRequestType model)
+		{
+			XmlSerializer serializer = new XmlSerializer(typeof(RestRequestType));
+
+			using (MemoryStream memStream = new MemoryStream())
+			{
+				serializer.Serialize(memStream, model);
+
+				using (StreamReader streamReader = new StreamReader(memStream))
+					return streamReader.ReadToEnd();
+			}
         }
 
         public override RestResultType FromDataType<RestResultType>(string data)
         {
-            throw new RestClientDotNetException("XML isn't supported yet.");
-        }
+			XmlSerializer serializer = new XmlSerializer(typeof(RestResultType));
 
-        private string XmlToString(XDocument doc)
-        {
-            StringBuilder builder = new StringBuilder();
-            using (TextWriter writer = new StringWriter(builder))
-            {
-                doc.Save(writer);
-            }
-            return builder.ToString();
-        }
+			return (RestResultType)serializer.Deserialize(new MemoryStream(Encoding.Unicode.GetBytes(data)));
+		}
     }
 }

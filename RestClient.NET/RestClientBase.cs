@@ -113,9 +113,9 @@ namespace SkaCahToa.Rest
                 {
                     return DataSerializer.FromDataType<ResultType>(await response.Content.ReadAsStringAsync());
                 }
-                catch (Exception e)
+                catch (Exception)
                 {
-                    throw e;
+                    throw;
                 }
             }
             else
@@ -126,9 +126,9 @@ namespace SkaCahToa.Rest
 
                     throw new RestErrorResponseException(error, "request returned :" + response.StatusCode.ToString());
                 }
-                catch (Exception e)
+                catch (Exception)
                 {
-                    throw e;
+                    throw;
                 }
             }
         }
