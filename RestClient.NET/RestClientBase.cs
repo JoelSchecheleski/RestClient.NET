@@ -61,6 +61,7 @@ namespace SkaCahToa.Rest
 
 		private RestClientBase()
 		{
+			Disposed = false;
 			Client = null;
 		}
 
