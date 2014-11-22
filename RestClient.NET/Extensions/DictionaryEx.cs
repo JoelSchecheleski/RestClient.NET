@@ -4,9 +4,9 @@ using System.Linq;
 
 namespace SkaCahToa.Rest.Extensions
 {
-    public static class DictionaryEx
+	internal static class DictionaryEx
     {
-        public static string ToQueryString(this Dictionary<string, string> dictionary)
+        internal static string ToQueryString(this Dictionary<string, string> dictionary)
         {
             List<string> ret = new List<string>();
 

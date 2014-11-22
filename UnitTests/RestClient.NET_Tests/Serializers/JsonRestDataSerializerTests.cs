@@ -1,10 +1,12 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SkaCahToa.Rest.Models;
 using SkaCahToa.Rest.Serializers;
+using System.Diagnostics.CodeAnalysis;
 
 namespace SkaCahToa.Rest.Tests.Serializers
 {
-    [TestClass]
+	[ExcludeFromCodeCoverage]
+	[TestClass]
     public class JsonRestDataSerializerTests
     {
         private class JSONTestObject : RestRequest

@@ -7,7 +7,7 @@ namespace SkaCahToa.Rest.Models
 {
     public class RestRequest
     {
-        public RestUrl GetModelURL(string baseUrl)
+        internal RestUrl GetModelURL(string baseUrl)
         {
             RestUrl url = new RestUrl(baseUrl);
             TypeInfo ti = GetType().GetTypeInfo();

@@ -1,9 +1,11 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SkaCahToa.Rest.Models.Attributes;
+using System.Diagnostics.CodeAnalysis;
 
 namespace SkaCahToa.Rest.Tests.Models.Attributes
 {
-    [TestClass]
+	[ExcludeFromCodeCoverage]
+	[TestClass]
     public class ParameterDefTests
     {
         [TestMethod]

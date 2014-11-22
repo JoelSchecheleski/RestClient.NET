@@ -2,10 +2,12 @@
 using SkaCahToa.Rest.Models;
 using SkaCahToa.Rest.Models.Attributes;
 using System;
+using System.Diagnostics.CodeAnalysis;
 
 namespace SkaCahToa.Rest.Tests.Models
 {
-    [TestClass]
+	[ExcludeFromCodeCoverage]
+	[TestClass]
     public class RestRequestTests
     {
         [SegmentDef(1, UrlDefinitionDataTypes.Static, "george")]
@@ -20,6 +22,19 @@ namespace SkaCahToa.Rest.Tests.Models
             public string MiddleName { get; set; }
         }
 
+		[SegmentDef(1, UrlDefinitionDataTypes.Static, "george")]
+		[SegmentDef(3, UrlDefinitionDataTypes.Static, "bluth")]
+		[SegmentDef(2, UrlDefinitionDataTypes.Data, "MiddleName")]
+		[ParameterDef("show", UrlDefinitionDataTypes.Static, "Arrested Development")]
+		[ParameterDef("TimeStamp", UrlDefinitionDataTypes.Data, "CurrentTimeStamp")]
+		[ParameterDef("t", UrlDefinitionDataTypes.NotImplemented, "nDashA")]
+		private class TestRestRequestUrlException : RestRequest
+		{
+			public string CurrentTimeStamp { get { return DateTime.MinValue.ToString(); } }
+
+			public string MiddleName { get; set; }
+		}
+
         [TestMethod]
         public void GetModelURLTests()
         {
@@ -33,5 +48,17 @@ namespace SkaCahToa.Rest.Tests.Models
 
             Assert.AreEqual<string>(expected, actual);
         }
+
+		[TestMethod]
+		[ExpectedException(typeof(Exceptions.RestClientDotNetException))]
+		public void GetModelUrlThrowExceptionNotImplemented()
+		{
+			TestRestRequestUrlException trrue = new TestRestRequestUrlException()
+			{
+				MiddleName = string.Empty
+			};
+
+			string actual = trrue.GetModelURL("http://www.google.com/").ToString();
+		}
     }
 }

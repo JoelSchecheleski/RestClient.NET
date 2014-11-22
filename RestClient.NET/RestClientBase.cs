@@ -10,17 +10,32 @@ using System.Threading.Tasks;
 
 namespace SkaCahToa.Rest
 {
-    public abstract class RestClientBase
+    public abstract class RestClientBase : IDisposable
     {
         public enum DataTypes
         {
+			NotImplemented,
             JSON,
             XML
         }
 
-        #region Constructors
+		#region Properties
 
-        public RestClientBase(DataTypes dataType)
+		protected RestErrorResult LastError { get; private set; }
+
+		protected IRestDataSerializer DataSerializer { get; private set; }
+
+		protected HttpClient Client { get; set; }
+
+		protected abstract string Url { get; }
+
+		private bool Disposed { get; set; }
+
+		#endregion Properties
+
+		#region Constructors
+
+		public RestClientBase(DataTypes dataType) : this()
         {
             switch (dataType)
             {
@@ -37,22 +52,26 @@ namespace SkaCahToa.Rest
             }
         }
 
-        public RestClientBase(IRestDataSerializer serializer)
+        public RestClientBase(IRestDataSerializer serializer) : this()
         {
             if (serializer == null)
                 throw new Exceptions.RestClientDotNetException("Serializer cannot be null");
             DataSerializer = serializer;
         }
 
-        #endregion Constructors
+		private RestClientBase()
+		{
+			Client = null;
+		}
 
-        protected RestErrorResult LastError { get; private set; }
+		~RestClientBase()
+		{
+			Dispose(false);
+		}
 
-        protected IRestDataSerializer DataSerializer { get; private set; }
+		#endregion Constructors
 
-        protected abstract string Url { get; }
-
-        protected abstract HttpClient SetupCreds(HttpClient hc);
+		protected abstract HttpClient SetupCreds(HttpClient hc);
 
         protected ResultType SendRequest<ResultType, RequestType, ErrorType>(RequestType data)
             where ResultType : RestResult
@@ -82,7 +101,7 @@ namespace SkaCahToa.Rest
                 data.GetModelURL(Url),
                 type,
                 (type != HttpMethod.Get ? data : null)
-            );
+            ).ConfigureAwait(false);
         }
 
         private async Task<ResultType> SendRequestAsync<ResultType, RequestType, ErrorType>(RestUrl url, HttpMethod methodType, RequestType data = null)
@@ -90,8 +109,8 @@ namespace SkaCahToa.Rest
             where RequestType : RestRequest
             where ErrorType : RestErrorResult
         {
-            HttpClient hc = new HttpClient();
-            hc = SetupCreds(hc);
+			if (Client == null)
+				Client = SetupCreds(new HttpClient());
 
             HttpRequestMessage request = new HttpRequestMessage(methodType, url.ToString());
 
@@ -105,13 +124,13 @@ namespace SkaCahToa.Rest
                 }
             }
 
-            HttpResponseMessage response = await hc.SendAsync(request);
+            HttpResponseMessage response = await Client.SendAsync(request).ConfigureAwait(false);
 
             if (response.IsSuccessStatusCode)
             {
                 try
                 {
-                    return DataSerializer.FromDataType<ResultType>(await response.Content.ReadAsStringAsync());
+                    return DataSerializer.FromDataType<ResultType>(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
                 }
                 catch (Exception)
                 {
@@ -122,9 +141,9 @@ namespace SkaCahToa.Rest
             {
                 try
                 {
-                    ErrorType error = DataSerializer.FromDataType<ErrorType>(await response.Content.ReadAsStringAsync());
+                    LastError = DataSerializer.FromDataType<ErrorType>(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
 
-                    throw new RestErrorResponseException(error, "request returned :" + response.StatusCode.ToString());
+                    throw new RestErrorResponseException(LastError, "request returned: " + response.StatusCode.ToString());
                 }
                 catch (Exception)
                 {
@@ -132,5 +151,32 @@ namespace SkaCahToa.Rest
                 }
             }
         }
-    }
+
+		#region IDisposable
+
+		public void Dispose()
+		{
+			Dispose(true);
+			GC.SuppressFinalize(this);
+		}
+
+		protected virtual void Dispose(bool disposing)
+		{
+			if (!Disposed)
+			{
+				if (disposing)
+				{
+				}
+
+				if (Client != null)
+					Client.Dispose();
+
+				DataSerializer.Dispose();
+
+				Disposed = true;
+			}
+		}
+
+		#endregion IDisposable
+	}
 }

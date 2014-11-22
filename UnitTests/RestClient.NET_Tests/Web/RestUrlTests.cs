@@ -1,10 +1,12 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SkaCahToa.Rest.Web;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 
 namespace SkaCahToa.Rest.Tests.Web
 {
-    [TestClass]
+	[ExcludeFromCodeCoverage]
+	[TestClass]
     public class RestUrlTests
     {
         [TestMethod]
@@ -16,7 +18,7 @@ namespace SkaCahToa.Rest.Tests.Web
             Dictionary<string, string> qstring = new Dictionary<string, string>();
             qstring.Add("sort", "newest");
 
-            RestUrl actual = new RestUrl("http://www.slashdot.org/", segments, qstring);
+            RestUrl actual = new RestUrl("http://www.slashdot.org", segments, qstring);
 
             actual.AddSegment(2, "news");
             actual.AddQueryStringParam("clientid", "reptar");

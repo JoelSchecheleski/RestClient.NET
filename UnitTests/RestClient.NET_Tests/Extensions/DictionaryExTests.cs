@@ -1,10 +1,12 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SkaCahToa.Rest.Extensions;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 
 namespace SkaCahToa.Rest.Tests.Extensions
 {
-    [TestClass]
+	[ExcludeFromCodeCoverage]
+	[TestClass]
     public class DictionaryExTests
     {
         [TestMethod]

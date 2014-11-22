@@ -15,6 +15,14 @@ namespace SkaCahToa.Rest.Serializers
             where RestResultType : RestResult
         {
             return JsonConvert.DeserializeObject<RestResultType>(data);
-        }
-    }
+		}
+
+		#region IDisposable
+
+		public virtual void Dispose()
+		{
+		}
+
+		#endregion IDisposable
+	}
 }

@@ -4,15 +4,19 @@ using System.Linq;
 
 namespace SkaCahToa.Rest.Web
 {
-    public class RestUrl
+    internal class RestUrl
     {
-        protected string BaseUrl { get; set; }
+		#region Properties
+
+		protected string BaseUrl { get; set; }
 
         protected Dictionary<int, string> Segments { get; set; }
 
         protected Dictionary<string, string> QueryString { get; set; }
 
-        public RestUrl(string baseUrl, Dictionary<int, string> segments = null, Dictionary<string, string> queryString = null)
+		#endregion Properties
+
+		public RestUrl(string baseUrl, Dictionary<int, string> segments = null, Dictionary<string, string> queryString = null)
         {
             BaseUrl = baseUrl.EndsWith("/") ? baseUrl : (baseUrl + "/");
             Segments = segments != null ? segments : new Dictionary<int, string>();
