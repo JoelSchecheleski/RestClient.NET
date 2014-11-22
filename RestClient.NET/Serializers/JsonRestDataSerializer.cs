@@ -3,23 +3,27 @@ using SkaCahToa.Rest.Models;
 
 namespace SkaCahToa.Rest.Serializers
 {
-    public class JsonRestDataSerializer : IRestDataSerializer
+    public sealed class JsonRestDataSerializer : IRestDataSerializer
     {
-        public virtual string ToDataType<RestRequestType>(RestRequestType model)
+		#region  IRestDataSerializer
+
+		public string ToDataType<RestRequestType>(RestRequestType model)
             where RestRequestType : RestRequest
         {
             return JsonConvert.SerializeObject(model);
         }
 
-        public virtual RestResultType FromDataType<RestResultType>(string data)
+        public RestResultType FromDataType<RestResultType>(string data)
             where RestResultType : RestResult
         {
             return JsonConvert.DeserializeObject<RestResultType>(data);
 		}
 
+		#endregion IRestDataSerializer
+
 		#region IDisposable
 
-		public virtual void Dispose()
+		public void Dispose()
 		{
 		}
 

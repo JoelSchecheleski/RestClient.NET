@@ -22,9 +22,9 @@ namespace OpenWeatherMap.RestAPI
             }
         }
 
-        protected override HttpClient SetupCreds(HttpClient hc)
+        protected override HttpClient SetupConnection()
         {
-            return hc;
+            return new HttpClient();
         }
 
         public WeatherResult GetWeather(string query)

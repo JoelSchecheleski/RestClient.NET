@@ -17,5 +17,15 @@ namespace SkaCahToa.Rest.Extensions
 
             return string.Join("&", ret);
         }
+
+		internal static bool AddSafe<TKey, TValue>(this Dictionary<TKey, TValue> dictionary, TKey key, TValue value)
+		{
+			if (!dictionary.ContainsKey(key))
+			{
+				dictionary.Add(key, value);
+				return true;
+			}
+			return false;
+		}
     }
 }

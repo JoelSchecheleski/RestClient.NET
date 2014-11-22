@@ -5,9 +5,11 @@ using System.Xml.Serialization;
 
 namespace SkaCahToa.Rest.Serializers
 {
-    public class XmlRestDataSerializer : IRestDataSerializer
+    public sealed class XmlRestDataSerializer : IRestDataSerializer
 	{
-		public virtual string ToDataType<RestRequestType>(RestRequestType model)
+		#region IRestDataSerializer
+
+		public string ToDataType<RestRequestType>(RestRequestType model)
 			where RestRequestType : RestRequest
 		{
 			XmlSerializer serializer = new XmlSerializer(typeof(RestRequestType));
@@ -20,7 +22,7 @@ namespace SkaCahToa.Rest.Serializers
 			}
         }
 
-        public virtual RestResultType FromDataType<RestResultType>(string data)
+        public RestResultType FromDataType<RestResultType>(string data)
 			where RestResultType : RestResult
 		{
 			XmlSerializer serializer = new XmlSerializer(typeof(RestResultType));
@@ -28,9 +30,11 @@ namespace SkaCahToa.Rest.Serializers
 			return (RestResultType)serializer.Deserialize(new MemoryStream(Encoding.Unicode.GetBytes(data)));
 		}
 
+		#endregion IRestDataSerializer
+
 		#region IDisposable
 
-		public virtual void Dispose()
+		public void Dispose()
 		{
 		}
 

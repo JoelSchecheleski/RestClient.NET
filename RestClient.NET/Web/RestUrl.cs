@@ -18,28 +18,34 @@ namespace SkaCahToa.Rest.Web
 
 		public RestUrl(string baseUrl, Dictionary<int, string> segments = null, Dictionary<string, string> queryString = null)
         {
-            BaseUrl = baseUrl.EndsWith("/") ? baseUrl : (baseUrl + "/");
-            Segments = segments != null ? segments : new Dictionary<int, string>();
-            QueryString = queryString != null ? queryString : new Dictionary<string, string>();
+			BaseUrl = baseUrl.EndsWith("/") ? baseUrl : (baseUrl + "/");
+
+			Segments = segments != null ? segments : new Dictionary<int, string>();
+
+			QueryString = queryString != null ? queryString : new Dictionary<string, string>();
         }
 
         public void AddSegment(int order, string value)
         {
-            if (!Segments.ContainsKey(order))
-                Segments.Add(order, value);
+			Segments.AddSafe(order, value);
         }
 
         public void AddQueryStringParam(string key, string value)
         {
-            if (!QueryString.ContainsKey(key))
-                QueryString.Add(key, value);
+            QueryString.AddSafe(key, value);
         }
 
         public override string ToString()
         {
             string url = BaseUrl;
-            url += string.Join("/", Segments.OrderBy(s => s.Key).Select(s => s.Value.Trim('/')));
-            return url + "?" + QueryString.ToQueryString();
+
+			if(Segments.Count > 0)
+				url += string.Join("/", Segments.OrderBy(s => s.Key).Select(s => s.Value.Trim('/')));
+
+			if(QueryString.Count > 0)
+				url += "?" + QueryString.ToQueryString();
+
+			return url;
         }
     }
 }

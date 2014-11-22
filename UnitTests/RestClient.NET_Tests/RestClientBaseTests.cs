@@ -1,4 +1,5 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Newtonsoft.Json;
 using SkaCahToa.Rest.Exceptions;
 using SkaCahToa.Rest.Models;
 using SkaCahToa.Rest.Serializers;
@@ -16,7 +17,6 @@ namespace SkaCahToa.Rest.Tests
 	[TestClass]
     public class RestClientBaseMockTest : RestClientBase
 	{
-
 		[TestMethod]
 		public void TestSendRequestThrowExceptionIfNoModelMethodIsSelected()
 		{
@@ -24,16 +24,16 @@ namespace SkaCahToa.Rest.Tests
 			{
 				SendRequest<ResultObject, RequestObject, ErrorResultObject>(null);
 			}
-			catch (AggregateException e)
+			catch (RestClientDotNetException e)
 			{
-				if (!(e.InnerException is RestClientDotNetException))
+				if (e.Message != "Http Method Type Not Supported")
 				{
 					Assert.Fail();
 				}
-				else if (e.InnerException.Message != "Http Method Type Not Supported")
-				{
-					Assert.Fail();
-				}
+			}
+			catch(Exception)
+			{
+				Assert.Fail();
 			}
 		}
 
@@ -53,6 +53,46 @@ namespace SkaCahToa.Rest.Tests
 			Assert.AreEqual<string>("expectedValue", result.Field1);
 		}
 
+		[TestMethod]
+		[ExpectedException(typeof(JsonReaderException))]
+		public void TestSendRequestGetInvalidResponse()
+		{
+			RequestGetObject rgo = new RequestGetObject();
+
+			MockHandler.AddFakeResponse(
+				rgo.GetModelURL(Url),
+				HttpStatusCode.OK,
+				"{{}{{}}\"]}"
+			);
+
+			ResultObject result = SendRequest<ResultObject, RequestGetObject, ErrorResultObject>(rgo);
+		}
+
+		[TestMethod]
+		public void TestSendRequestGetErrorResponseObject()
+		{
+			RequestPostObject rpo = new RequestPostObject();
+
+			MockHandler.AddFakeResponse(
+				rpo.GetModelURL(Url),
+				HttpStatusCode.Unauthorized,
+				"{ErrorMessage:'ErrorMessageValue'}"
+			);
+
+			try
+			{
+				ResultObject result = SendRequest<ResultObject, RequestPostObject, ErrorResultObject>(rpo);
+				Assert.Fail("Error Response Exception didn't get thrown.");
+			}
+			catch (RestErrorResponseException e)
+			{
+				Assert.IsTrue(e.Error is ErrorResultObject);
+
+				ErrorResultObject errorObject = (ErrorResultObject)e.Error;
+
+				Assert.AreEqual<string>("ErrorMessageValue", errorObject.ErrorMessage);
+			}
+		}
 		public RestClientBaseMockTest() : base(DataTypes.JSON)
         {
             MockHandler = new MockableResponseHandler();
@@ -78,12 +118,14 @@ namespace SkaCahToa.Rest.Tests
 
         protected override string Url { get { return "http://localhost/"; } }
 
-        protected override HttpClient SetupCreds(HttpClient hc)
+        protected override HttpClient SetupConnection()
         {
             return new HttpClient(MockHandler);
         }
 
         private class RequestGetObject : RestGetRequest { }
+
+		private class RequestPostObject : RestPostRequest { }
 
         private class RequestObject : RestRequest { }
 
@@ -92,7 +134,10 @@ namespace SkaCahToa.Rest.Tests
             public string Field1 { get; set; }
         }
 
-        private class ErrorResultObject : RestErrorResult { }
+        private class ErrorResultObject : RestErrorResult
+		{
+			public string ErrorMessage { get; set; }
+		}
 
         private class MockableResponseHandler : DelegatingHandler
         {
@@ -172,6 +217,23 @@ namespace SkaCahToa.Rest.Tests
 		public void ConstructorTestCustomSerializer()
 		{
 			using (RestClientBaseMockTest mock = new RestClientBaseMockTest(new CustomSerializer())) { }
+		}
+
+		[TestMethod]
+		[ExpectedException(typeof(RestClientDotNetException))]
+		public void ConstructorTestNullCustomSerializer()
+		{
+			using (RestClientBaseMockTest mock = new RestClientBaseMockTest(null)) { }
+		}
+
+
+		[TestMethod]
+		public void SafeDoubleDispose()
+		{
+			using (RestClientBaseMockTest mock = new RestClientBaseMockTest(new CustomSerializer()))
+			{
+				mock.Dispose();
+			}
 		}
 	}
 }

@@ -3,6 +3,7 @@ using SkaCahToa.Rest.Models;
 using SkaCahToa.Rest.Serializers;
 using SkaCahToa.Rest.Web;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Net.Http;
 using System.Text;
@@ -23,11 +24,9 @@ namespace SkaCahToa.Rest
 
 		protected RestErrorResult LastError { get; private set; }
 
-		protected IRestDataSerializer DataSerializer { get; private set; }
+		private IRestDataSerializer DataSerializer { get; set; }
 
-		protected HttpClient Client { get; set; }
-
-		protected abstract string Url { get; }
+		private HttpClient Client { get; set; }
 
 		private bool Disposed { get; set; }
 
@@ -72,17 +71,39 @@ namespace SkaCahToa.Rest
 
 		#endregion Constructors
 
-		protected abstract HttpClient SetupCreds(HttpClient hc);
+		#region Abstract Members
 
-        protected ResultType SendRequest<ResultType, RequestType, ErrorType>(RequestType data)
+		protected abstract HttpClient SetupConnection();
+
+		protected abstract string Url { get; }
+
+		#endregion Abstract Members
+
+		protected ResultType SendRequest<ResultType, RequestType, ErrorType>(RequestType data)
             where ResultType : RestResult
             where RequestType : RestRequest
             where ErrorType : RestErrorResult
         {
             Task<ResultType> task = SendRequestAsync<ResultType, RequestType, ErrorType>(data);
 
-            return task.Result;
-        }
+			try
+			{
+				return task.Result;
+			}
+			catch (AggregateException e)
+			{
+				if (e.InnerExceptions.Count == 1)
+				{
+					IEnumerator<Exception> exceptions = e.InnerExceptions.GetEnumerator();
+					exceptions.MoveNext();
+					throw exceptions.Current;
+				}
+				else
+				{
+					throw;
+				}
+			}
+		}
 
         protected async Task<ResultType> SendRequestAsync<ResultType, RequestType, ErrorType>(RequestType data)
             where ResultType : RestResult
@@ -98,11 +119,11 @@ namespace SkaCahToa.Rest
             else
                 throw new Exceptions.RestClientDotNetException("Http Method Type Not Supported");
 
-            return await SendRequestAsync<ResultType, RequestType, ErrorType>(
-                data.GetModelURL(Url),
-                type,
-                (type != HttpMethod.Get ? data : null)
-            ).ConfigureAwait(false);
+			return await SendRequestAsync<ResultType, RequestType, ErrorType>(
+				data.GetModelURL(Url),
+				type,
+				(type != HttpMethod.Get ? data : null)
+			).ConfigureAwait(false);
         }
 
         private async Task<ResultType> SendRequestAsync<ResultType, RequestType, ErrorType>(RestUrl url, HttpMethod methodType, RequestType data = null)
@@ -111,7 +132,7 @@ namespace SkaCahToa.Rest
             where ErrorType : RestErrorResult
         {
 			if (Client == null)
-				Client = SetupCreds(new HttpClient());
+				Client = SetupConnection();
 
             HttpRequestMessage request = new HttpRequestMessage(methodType, url.ToString());
 
@@ -163,19 +184,16 @@ namespace SkaCahToa.Rest
 
 		protected virtual void Dispose(bool disposing)
 		{
-			if (!Disposed)
-			{
-				if (disposing)
-				{
-				}
+			if (Disposed)
+				return;
 
-				if (Client != null)
-					Client.Dispose();
+			if (Client != null)
+				Client.Dispose();
 
+			if (DataSerializer != null)
 				DataSerializer.Dispose();
 
-				Disposed = true;
-			}
+			Disposed = true;
 		}
 
 		#endregion IDisposable

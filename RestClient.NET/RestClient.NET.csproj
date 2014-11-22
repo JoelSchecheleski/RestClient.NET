@@ -44,7 +44,7 @@
     <Compile Include="Exceptions\RestErrorResponseException.cs" />
     <Compile Include="Exceptions\RestClientDotNetException.cs" />
     <Compile Include="Extensions\DictionaryEx.cs" />
-    <Compile Include="FriendAssemblies.cs" />
+    <Compile Include="Config\FriendAssemblies.cs" />
     <Compile Include="Models\Attributes\ParameterDef.cs" />
     <Compile Include="Models\Attributes\SegmentDef.cs" />
     <Compile Include="Models\Attributes\UrlDefinitionBase.cs" />
@@ -62,7 +62,7 @@
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Newtonsoft.Json">
-      <HintPath>..\packages\Newtonsoft.Json.6.0.5\lib\portable-net45+wp80+win8+wpa81\Newtonsoft.Json.dll</HintPath>
+      <HintPath>..\packages\Newtonsoft.Json.6.0.6\lib\portable-net45+wp80+win8+wpa81+aspnetcore50\Newtonsoft.Json.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
