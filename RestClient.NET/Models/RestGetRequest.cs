@@ -1,6 +1,6 @@
 ﻿namespace SkaCahToa.Rest.Models
 {
-    public class RestGetRequest : RestRequest
+    public abstract class RestGetRequest : RestRequest
     {
     }
 }

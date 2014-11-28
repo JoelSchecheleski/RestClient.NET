@@ -5,7 +5,10 @@ using System.Xml.Serialization;
 
 namespace SkaCahToa.Rest.Serializers
 {
-    public sealed class XmlRestDataSerializer : IRestDataSerializer
+	/// <summary>
+	/// RestClient.NET XML Serializer. It'll translate RestModels into XML strings.
+	/// </summary>
+	public sealed class XmlRestDataSerializer : IRestDataSerializer
 	{
 		#region IRestDataSerializer
 

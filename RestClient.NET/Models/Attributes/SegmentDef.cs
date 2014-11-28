@@ -2,6 +2,9 @@
 
 namespace SkaCahToa.Rest.Models.Attributes
 {
+	/// <summary>
+	/// Class Attribute that defines a Url Segment for a model
+	/// </summary>
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = true, Inherited = true)]
     public class SegmentDef : UrlDefinitionBase
     {

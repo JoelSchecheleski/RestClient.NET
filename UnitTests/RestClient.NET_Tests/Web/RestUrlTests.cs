@@ -14,14 +14,13 @@ namespace SkaCahToa.Rest.Tests.Web
         {
             Dictionary<int, string> segments = new Dictionary<int, string>();
             segments.Add(1, "Api");
+			segments.Add(2, "news");
 
             Dictionary<string, string> qstring = new Dictionary<string, string>();
             qstring.Add("sort", "newest");
+			qstring.Add("clientid", "reptar");
 
-            RestUrl actual = new RestUrl("http://www.slashdot.org", segments, qstring);
-
-            actual.AddSegment(2, "news");
-            actual.AddQueryStringParam("clientid", "reptar");
+            RestUrlBuilder actual = new RestUrlBuilder("http://www.slashdot.org", segments, qstring);
 
             string expected = "http://www.slashdot.org/Api/news?clientid=reptar&sort=newest";
 

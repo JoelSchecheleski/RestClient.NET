@@ -2,6 +2,9 @@
 
 namespace SkaCahToa.Rest.Models.Attributes
 {
+	/// <summary>
+	/// Data population types for UrlDefinitions.
+	/// </summary>
     public enum UrlDefinitionDataTypes
     {
 		NotImplemented,

@@ -43,7 +43,7 @@ namespace SkaCahToa.Rest.Tests
 			RequestGetObject rgo = new RequestGetObject();
 
 			MockHandler.AddFakeResponse(
-				rgo.GetModelURL(Url),
+				new RestUrlBuilder(Url, rgo),
 				HttpStatusCode.OK,
 				"{\"Field1\":\"expectedValue\"}"
 			);
@@ -60,7 +60,7 @@ namespace SkaCahToa.Rest.Tests
 			RequestGetObject rgo = new RequestGetObject();
 
 			MockHandler.AddFakeResponse(
-				rgo.GetModelURL(Url),
+				new RestUrlBuilder(Url, rgo),
 				HttpStatusCode.OK,
 				"{{}{{}}\"]}"
 			);
@@ -74,7 +74,7 @@ namespace SkaCahToa.Rest.Tests
 			RequestPostObject rpo = new RequestPostObject();
 
 			MockHandler.AddFakeResponse(
-				rpo.GetModelURL(Url),
+				new RestUrlBuilder(Url, rpo),
 				HttpStatusCode.Unauthorized,
 				"{ErrorMessage:'ErrorMessageValue'}"
 			);
@@ -143,7 +143,7 @@ namespace SkaCahToa.Rest.Tests
         {
             private readonly Dictionary<Uri, HttpResponseMessage> MockedResponses = new Dictionary<Uri, HttpResponseMessage>();
 
-            public void AddFakeResponse(RestUrl uri, HttpStatusCode code, string data)
+            public void AddFakeResponse(RestUrlBuilder uri, HttpStatusCode code, string data)
             {
                 MockedResponses.Add(
                     new Uri(uri.ToString()),

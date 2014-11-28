@@ -3,6 +3,9 @@ using SkaCahToa.Rest.Models;
 
 namespace SkaCahToa.Rest.Serializers
 {
+	/// <summary>
+	/// RestClient.NET Json Serializer. It'll translate RestModels into JSON strings.
+	/// </summary>
     public sealed class JsonRestDataSerializer : IRestDataSerializer
     {
 		#region  IRestDataSerializer
