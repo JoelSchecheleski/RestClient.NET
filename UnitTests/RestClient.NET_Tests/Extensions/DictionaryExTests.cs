@@ -47,5 +47,5 @@ namespace SkaCahToa.Rest.Tests.Extensions
 			Assert.AreEqual<bool>(true, testData.AddSafe(3, "test"));
 			Assert.AreEqual<int>(3, testData.Count);
 		}
-    }
+	}
 }

@@ -5,23 +5,23 @@ using System.Linq;
 namespace SkaCahToa.Rest.Extensions
 {
 	internal static class DictionaryEx
-    {
+	{
 		/// <summary>
 		/// Flattens dictionary to a valid http request QueryString.
 		/// </summary>
 		/// <param name="dictionary"></param>
 		/// <returns>Valid QueryString</returns>
-        internal static string ToQueryString(this Dictionary<string, string> dictionary)
-        {
-            List<string> ret = new List<string>();
+		internal static string ToQueryString(this Dictionary<string, string> dictionary)
+		{
+			List<string> ret = new List<string>();
 
-            foreach (KeyValuePair<string, string> pair in dictionary.OrderBy(p => p.Key))
-            {
-                ret.Add(Uri.EscapeDataString(pair.Key) + "=" + Uri.EscapeDataString(pair.Value));
-            }
+			foreach (KeyValuePair<string, string> pair in dictionary.OrderBy(p => p.Key))
+			{
+				ret.Add(Uri.EscapeDataString(pair.Key) + "=" + Uri.EscapeDataString(pair.Value));
+			}
 
-            return string.Join("&", ret);
-        }
+			return string.Join("&", ret);
+		}
 
 		/// <summary>
 		/// Add key value pair to dictionary if key doesn't exist.
@@ -41,5 +41,5 @@ namespace SkaCahToa.Rest.Extensions
 			}
 			return false;
 		}
-    }
+	}
 }

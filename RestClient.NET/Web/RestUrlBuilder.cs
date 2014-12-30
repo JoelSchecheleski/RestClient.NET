@@ -10,15 +10,15 @@ namespace SkaCahToa.Rest.Web
 	/// <summary>
 	/// Builds a valid request url using QueryString Parameters And Segments.
 	/// </summary>
-    internal class RestUrlBuilder
-    {
+	internal class RestUrlBuilder
+	{
 		#region Properties
 
 		protected string BaseUrl { get; set; }
 
-        protected Dictionary<int, string> Segments { get; set; }
+		protected Dictionary<int, string> Segments { get; set; }
 
-        protected Dictionary<string, string> QueryString { get; set; }
+		protected Dictionary<string, string> QueryString { get; set; }
 
 		#endregion Properties
 
@@ -29,7 +29,8 @@ namespace SkaCahToa.Rest.Web
 			QueryString = queryString;
 		}
 
-		internal RestUrlBuilder(string baseUrl, RestRequest request) : this(baseUrl, new Dictionary<int, string>(), new Dictionary<string, string>())
+		internal RestUrlBuilder(string baseUrl, RestRequest request)
+			: this(baseUrl, new Dictionary<int, string>(), new Dictionary<string, string>())
 		{
 			TypeInfo ti = request.GetType().GetTypeInfo();
 
@@ -73,37 +74,37 @@ namespace SkaCahToa.Rest.Web
 		/// <param name="order">Segment Position</param>
 		/// <param name="value">Segment Value</param>
 		protected void AddSegment(int order, string value)
-        {
+		{
 			Segments.AddSafe(order, value);
-        }
+		}
 
 		/// <summary>
 		/// Add QueryString Parameter to Url
 		/// </summary>
 		/// <param name="key">QueryString Key</param>
 		/// <param name="value">QueryString Value</param>
-        protected void AddQueryStringParam(string key, string value)
-        {
-            QueryString.AddSafe(key, value);
-        }
+		protected void AddQueryStringParam(string key, string value)
+		{
+			QueryString.AddSafe(key, value);
+		}
 
 		/// <summary>
 		/// Get Current Configured Url
 		/// </summary>
 		/// <returns>Current Rest Request Url</returns>
-        public override string ToString()
-        {
-            string url = BaseUrl;
+		public override string ToString()
+		{
+			string url = BaseUrl;
 
 			//Add segments to base endpoint url
-			if(Segments.Count > 0)
+			if (Segments.Count > 0)
 				url += string.Join("/", Segments.OrderBy(s => s.Key).Select(s => s.Value.Trim('/')));
 
 			//build querystring
-			if(QueryString.Count > 0)
+			if (QueryString.Count > 0)
 				url += "?" + QueryString.ToQueryString();
 
 			return url;
-        }
-    }
+		}
+	}
 }

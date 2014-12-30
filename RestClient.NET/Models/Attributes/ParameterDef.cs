@@ -5,9 +5,9 @@ namespace SkaCahToa.Rest.Models.Attributes
 	/// <summary>
 	/// Attribute that defines a querystring parameter for a model
 	/// </summary>
-    [AttributeUsage(AttributeTargets.Class, AllowMultiple = true, Inherited = true)]
-    public class ParameterDef : UrlDefinitionBase
-    {
+	[AttributeUsage(AttributeTargets.Class, AllowMultiple = true, Inherited = true)]
+	public class ParameterDef : UrlDefinitionBase
+	{
 		#region Properties
 
 		/// <summary>
@@ -17,9 +17,10 @@ namespace SkaCahToa.Rest.Models.Attributes
 
 		#endregion Properties
 
-		public ParameterDef(string name, UrlDefinitionDataTypes type, string value) : base(type, value)
-        {
-            Name = name;
-        }
-    }
+		public ParameterDef(string name, UrlDefinitionDataTypes type, string value)
+			: base(type, value)
+		{
+			Name = name;
+		}
+	}
 }

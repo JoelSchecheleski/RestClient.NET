@@ -6,16 +6,16 @@ namespace SkaCahToa.Rest.Serializers
 	/// <summary>
 	/// Interface that'll Serialize and Deseralize RestModels.
 	/// </summary>
-    public interface IRestDataSerializer : IDisposable
-    {
+	public interface IRestDataSerializer : IDisposable
+	{
 		/// <summary>
 		/// Converts a RestRequestModel into a formatted string.
 		/// </summary>
 		/// <typeparam name="RestRequestType"></typeparam>
 		/// <param name="model"></param>
 		/// <returns></returns>
-        string ToDataType<RestRequestType>(RestRequestType model)
-            where RestRequestType : RestRequest;
+		string ToDataType<RestRequestType>(RestRequestType model)
+			where RestRequestType : RestRequest;
 
 		/// <summary>
 		/// Converts a formatted string into a RestResultModel
@@ -23,7 +23,7 @@ namespace SkaCahToa.Rest.Serializers
 		/// <typeparam name="RestResultType"></typeparam>
 		/// <param name="data"></param>
 		/// <returns></returns>
-        RestResultType FromDataType<RestResultType>(string data)
-            where RestResultType : RestResult;
-    }
+		RestResultType FromDataType<RestResultType>(string data)
+			where RestResultType : RestResult;
+	}
 }

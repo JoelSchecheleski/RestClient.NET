@@ -15,7 +15,7 @@ namespace SkaCahToa.Rest.Tests
 {
 	[ExcludeFromCodeCoverage]
 	[TestClass]
-    public class RestClientBaseMockTest : RestClientBase
+	public class RestClientBaseMockTest : RestClientBase
 	{
 		[TestMethod]
 		public void TestSendRequestThrowExceptionIfNoModelMethodIsSelected()
@@ -31,7 +31,7 @@ namespace SkaCahToa.Rest.Tests
 					Assert.Fail();
 				}
 			}
-			catch(Exception)
+			catch (Exception)
 			{
 				Assert.Fail();
 			}
@@ -93,17 +93,21 @@ namespace SkaCahToa.Rest.Tests
 				Assert.AreEqual<string>("ErrorMessageValue", errorObject.ErrorMessage);
 			}
 		}
-		public RestClientBaseMockTest() : base(DataTypes.JSON)
-        {
-            MockHandler = new MockableResponseHandler();
-        }
 
-		public RestClientBaseMockTest(DataTypes dt) : base(dt)
+		public RestClientBaseMockTest()
+			: base(DataTypes.JSON)
 		{
 			MockHandler = new MockableResponseHandler();
 		}
 
-		public RestClientBaseMockTest(IRestDataSerializer serializer) : base(serializer)
+		public RestClientBaseMockTest(DataTypes dt)
+			: base(dt)
+		{
+			MockHandler = new MockableResponseHandler();
+		}
+
+		public RestClientBaseMockTest(IRestDataSerializer serializer)
+			: base(serializer)
 		{
 			MockHandler = new MockableResponseHandler();
 		}
@@ -114,67 +118,67 @@ namespace SkaCahToa.Rest.Tests
 			Dispose(false);
 		}
 
-        private MockableResponseHandler MockHandler { get; set; }
+		private MockableResponseHandler MockHandler { get; set; }
 
-        protected override string Url { get { return "http://localhost/"; } }
+		protected override string Url { get { return "http://localhost/"; } }
 
-        protected override HttpClient SetupConnection()
-        {
-            return new HttpClient(MockHandler);
-        }
+		protected override HttpClient SetupConnection()
+		{
+			return new HttpClient(MockHandler);
+		}
 
-        private class RequestGetObject : RestGetRequest { }
+		private class RequestGetObject : RestGetRequest { }
 
 		private class RequestPostObject : RestPostRequest { }
 
-        private class RequestObject : RestRequest { }
+		private class RequestObject : RestRequest { }
 
-        private class ResultObject : RestResult
-        {
-            public string Field1 { get; set; }
-        }
+		private class ResultObject : RestResult
+		{
+			public string Field1 { get; set; }
+		}
 
-        private class ErrorResultObject : RestErrorResult
+		private class ErrorResultObject : RestErrorResult
 		{
 			public string ErrorMessage { get; set; }
 		}
 
-        private class MockableResponseHandler : DelegatingHandler
-        {
-            private readonly Dictionary<Uri, HttpResponseMessage> MockedResponses = new Dictionary<Uri, HttpResponseMessage>();
+		private class MockableResponseHandler : DelegatingHandler
+		{
+			private readonly Dictionary<Uri, HttpResponseMessage> MockedResponses = new Dictionary<Uri, HttpResponseMessage>();
 
-            public void AddFakeResponse(RestUrlBuilder uri, HttpStatusCode code, string data)
-            {
-                MockedResponses.Add(
-                    new Uri(uri.ToString()),
-                    new HttpResponseMessage(code)
-                    {
-                        Content = new ByteArrayContent(GetBytes(data))
-                    }
-                );
-            }
+			public void AddFakeResponse(RestUrlBuilder uri, HttpStatusCode code, string data)
+			{
+				MockedResponses.Add(
+					new Uri(uri.ToString()),
+					new HttpResponseMessage(code)
+					{
+						Content = new ByteArrayContent(GetBytes(data))
+					}
+				);
+			}
 
-            protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, System.Threading.CancellationToken cancellationToken)
-            {
-                if (MockedResponses.ContainsKey(request.RequestUri))
-                {
-                    return Task.FromResult(MockedResponses[request.RequestUri]);
-                }
-                else
-                {
-                    return Task.FromResult(new HttpResponseMessage(HttpStatusCode.NotFound)
-                    {
-                        RequestMessage = request
-                    });
-                }
-            }
+			protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, System.Threading.CancellationToken cancellationToken)
+			{
+				if (MockedResponses.ContainsKey(request.RequestUri))
+				{
+					return Task.FromResult(MockedResponses[request.RequestUri]);
+				}
+				else
+				{
+					return Task.FromResult(new HttpResponseMessage(HttpStatusCode.NotFound)
+					{
+						RequestMessage = request
+					});
+				}
+			}
 
-            protected byte[] GetBytes(string str)
-            {
-                return System.Text.Encoding.UTF8.GetBytes(str);
-            }
-        }
-    }
+			protected byte[] GetBytes(string str)
+			{
+				return System.Text.Encoding.UTF8.GetBytes(str);
+			}
+		}
+	}
 
 	[ExcludeFromCodeCoverage]
 	internal class CustomSerializer : IRestDataSerializer
@@ -204,7 +208,7 @@ namespace SkaCahToa.Rest.Tests
 		public void ConstructorTestXml()
 		{
 			using (RestClientBaseMockTest mock = new RestClientBaseMockTest(RestClientBase.DataTypes.XML)) { }
-        }
+		}
 
 		[TestMethod]
 		[ExpectedException(typeof(RestClientDotNetException))]
@@ -225,7 +229,6 @@ namespace SkaCahToa.Rest.Tests
 		{
 			using (RestClientBaseMockTest mock = new RestClientBaseMockTest(null)) { }
 		}
-
 
 		[TestMethod]
 		public void SafeDoubleDispose()

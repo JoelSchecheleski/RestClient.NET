@@ -4,8 +4,8 @@ using System.Threading.Tasks;
 
 namespace OpenWeatherMap
 {
-    internal class Program
-    {
+	internal class Program
+	{
 		private static void Main(string[] args)
 		{
 			//Get our API Class.
@@ -25,5 +25,5 @@ namespace OpenWeatherMap
 				Console.WriteLine(task.Result.Name + " " + task.Result.TimeStamp);
 			}
 		}
-    }
+	}
 }

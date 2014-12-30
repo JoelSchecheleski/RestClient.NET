@@ -23,9 +23,9 @@ namespace SkaCahToa.Rest.Serializers
 
 				return stringWriter.ToString();
 			}
-        }
+		}
 
-        public RestResultType FromDataType<RestResultType>(string data)
+		public RestResultType FromDataType<RestResultType>(string data)
 			where RestResultType : RestResult
 		{
 			XmlSerializer serializer = new XmlSerializer(typeof(RestResultType));
