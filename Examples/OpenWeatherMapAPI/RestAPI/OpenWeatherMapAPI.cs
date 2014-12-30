@@ -1,8 +1,8 @@
-﻿using Newtonsoft.Json;
-using SkaCahToa.Rest;
+﻿using SkaCahToa.Rest;
 using SkaCahToa.Rest.Models;
 using SkaCahToa.Rest.Models.Attributes;
 using System.Net.Http;
+using System.Runtime.Serialization;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
 
@@ -44,6 +44,7 @@ namespace OpenWeatherMap.RestAPI
 			});
 		}
 
+		[DataContract]
 		[SegmentDef(1, UrlDefinitionDataTypes.Static, "weather")]
 		[ParameterDef("q", UrlDefinitionDataTypes.Data, "Query")]
 		protected class WeatherGetRequest : RestGetRequest
@@ -51,25 +52,23 @@ namespace OpenWeatherMap.RestAPI
 			public string Query { get; set; }
 		}
 
+		[DataContract]
 		public class WeatherResult : RestResult
 		{
-			[XmlElement("name")]
-			[JsonProperty("name")]
+			[DataMember(Name = "name")]
 			public string Name { get; set; }
 
-			[XmlElement("dt")]
-			[JsonProperty("dt")]
+			[DataMember(Name = "dt")]
 			public int TimeStamp { get; set; }
 
-			[XmlElement("id")]
-			[JsonProperty("id")]
+			[DataMember(Name = "id")]
 			public int ID { get; set; }
 
-			[XmlElement("cod")]
-			[JsonProperty("cod")]
+			[DataMember(Name = "cod")]
 			public int Cod { get; set; }
 		}
 
+		[DataContract]
 		protected class WeatherErrorResult : RestErrorResult
 		{
 		}

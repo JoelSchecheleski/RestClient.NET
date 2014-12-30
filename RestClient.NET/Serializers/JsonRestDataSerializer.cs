@@ -1,5 +1,13 @@
-﻿using Newtonsoft.Json;
+﻿using SkaCahToa.Rest.Extensions;
 using SkaCahToa.Rest.Models;
+using SkaCahToa.Rest.Models.Attributes;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Reflection;
+using System.Runtime.Serialization.Json;
+using System.Text;
 
 namespace SkaCahToa.Rest.Serializers
 {
@@ -11,15 +19,30 @@ namespace SkaCahToa.Rest.Serializers
 		#region IRestDataSerializer
 
 		public string ToDataType<RestRequestType>(RestRequestType model)
-			where RestRequestType : RestRequest
+			where RestRequestType : RestRequest, new()
 		{
-			return JsonConvert.SerializeObject(model);
+			DataContractJsonSerializer serializer = new DataContractJsonSerializer(typeof(RestRequestType));
+
+			using (MemoryStream stream = new MemoryStream())
+			{
+				serializer.WriteObject(stream, model);
+
+				stream.Position = 0;
+
+				using (StreamReader sr = new StreamReader(stream))
+				{
+					return sr.ReadToEnd();
+				}
+			}
 		}
 
 		public RestResultType FromDataType<RestResultType>(string data)
-			where RestResultType : RestResult
+			where RestResultType : RestResult, new()
 		{
-			return JsonConvert.DeserializeObject<RestResultType>(data);
+			DataContractJsonSerializer serializer = new DataContractJsonSerializer(typeof(RestResultType));
+
+			using (MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes(data)))
+				return (RestResultType)serializer.ReadObject(stream);
 		}
 
 		#endregion IRestDataSerializer

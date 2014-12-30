@@ -1,5 +1,4 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Newtonsoft.Json;
 using SkaCahToa.Rest.Exceptions;
 using SkaCahToa.Rest.Models;
 using SkaCahToa.Rest.Serializers;
@@ -9,6 +8,7 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Net;
 using System.Net.Http;
+using System.Runtime.Serialization;
 using System.Threading.Tasks;
 
 namespace SkaCahToa.Rest.Tests
@@ -54,7 +54,7 @@ namespace SkaCahToa.Rest.Tests
 		}
 
 		[TestMethod]
-		[ExpectedException(typeof(JsonReaderException))]
+		[ExpectedException(typeof(RestErrorResponseException))]
 		public void TestSendRequestGetInvalidResponse()
 		{
 			RequestGetObject rgo = new RequestGetObject();
@@ -76,7 +76,7 @@ namespace SkaCahToa.Rest.Tests
 			MockHandler.AddFakeResponse(
 				new RestUrlBuilder(Url, rpo),
 				HttpStatusCode.Unauthorized,
-				"{ErrorMessage:'ErrorMessageValue'}"
+				"{\"ErrorMessage\":\"ErrorMessageValue\"}"
 			);
 
 			try
@@ -114,7 +114,8 @@ namespace SkaCahToa.Rest.Tests
 
 		~RestClientBaseMockTest()
 		{
-			MockHandler.Dispose();
+			if (MockHandler != null)
+				MockHandler.Dispose();
 			Dispose(false);
 		}
 
@@ -127,19 +128,26 @@ namespace SkaCahToa.Rest.Tests
 			return new HttpClient(MockHandler);
 		}
 
+		[DataContract]
 		private class RequestGetObject : RestGetRequest { }
 
+		[DataContract]
 		private class RequestPostObject : RestPostRequest { }
 
+		[DataContract]
 		private class RequestObject : RestRequest { }
 
+		[DataContract]
 		private class ResultObject : RestResult
 		{
+			[DataMember(Name = "Field1")]
 			public string Field1 { get; set; }
 		}
 
+		[DataContract]
 		private class ErrorResultObject : RestErrorResult
 		{
+			[DataMember(Name = "ErrorMessage")]
 			public string ErrorMessage { get; set; }
 		}
 
@@ -184,13 +192,13 @@ namespace SkaCahToa.Rest.Tests
 	internal class CustomSerializer : IRestDataSerializer
 	{
 		public virtual string ToDataType<RestRequestType>(RestRequestType model)
-			where RestRequestType : RestRequest
+			where RestRequestType : RestRequest, new()
 		{
 			return string.Empty;
 		}
 
 		public virtual RestResultType FromDataType<RestResultType>(string data)
-			where RestResultType : RestResult
+			where RestResultType : RestResult, new()
 		{
 			return default(RestResultType);
 		}

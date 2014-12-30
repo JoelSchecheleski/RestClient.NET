@@ -13,7 +13,7 @@ namespace SkaCahToa.Rest.Serializers
 		#region IRestDataSerializer
 
 		public string ToDataType<RestRequestType>(RestRequestType model)
-			where RestRequestType : RestRequest
+			where RestRequestType : RestRequest, new()
 		{
 			XmlSerializer serializer = new XmlSerializer(typeof(RestRequestType));
 
@@ -26,7 +26,7 @@ namespace SkaCahToa.Rest.Serializers
 		}
 
 		public RestResultType FromDataType<RestResultType>(string data)
-			where RestResultType : RestResult
+			where RestResultType : RestResult, new()
 		{
 			XmlSerializer serializer = new XmlSerializer(typeof(RestResultType));
 

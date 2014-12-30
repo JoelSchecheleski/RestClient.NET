@@ -15,7 +15,7 @@ namespace SkaCahToa.Rest.Serializers
 		/// <param name="model"></param>
 		/// <returns></returns>
 		string ToDataType<RestRequestType>(RestRequestType model)
-			where RestRequestType : RestRequest;
+			where RestRequestType : RestRequest, new();
 
 		/// <summary>
 		/// Converts a formatted string into a RestResultModel
@@ -24,6 +24,6 @@ namespace SkaCahToa.Rest.Serializers
 		/// <param name="data"></param>
 		/// <returns></returns>
 		RestResultType FromDataType<RestResultType>(string data)
-			where RestResultType : RestResult;
+			where RestResultType : RestResult, new();
 	}
 }

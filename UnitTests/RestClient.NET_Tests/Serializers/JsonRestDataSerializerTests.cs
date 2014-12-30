@@ -1,7 +1,9 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SkaCahToa.Rest.Models;
+using SkaCahToa.Rest.Models.Attributes;
 using SkaCahToa.Rest.Serializers;
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.Serialization;
 
 namespace SkaCahToa.Rest.Tests.Serializers
 {
@@ -9,21 +11,29 @@ namespace SkaCahToa.Rest.Tests.Serializers
 	[TestClass]
 	public class JsonRestDataSerializerTests
 	{
+		[DataContract]
 		private class JSONTestObject : RestRequest
 		{
+			[DataMember(Name = "field1")]
 			public string field1 { get; set; }
 
+			[DataMember(Name = "field2")]
 			public int field2 { get; set; }
 
+			[DataMember(Name = "field3")]
 			public bool field3 { get; set; }
 		}
 
+		[DataContract]
 		private class JSONTestObject2 : RestResult
 		{
+			[DataMember(Name = "field1")]
 			public string field1 { get; set; }
 
+			[DataMember(Name = "field2")]
 			public int field2 { get; set; }
 
+			[DataMember(Name = "field3")]
 			public bool field3 { get; set; }
 		}
 

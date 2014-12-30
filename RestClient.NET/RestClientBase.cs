@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net.Http;
+using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -97,40 +98,47 @@ namespace SkaCahToa.Rest
 		#endregion Abstract Members
 
 		public ResultType SendRequest<ResultType, RequestType, ErrorType>(RequestType data)
-			where ResultType : RestResult
-			where RequestType : RestRequest
-			where ErrorType : RestErrorResult
+			where ResultType : RestResult, new()
+			where RequestType : RestRequest, new()
+			where ErrorType : RestErrorResult, new()
 		{
 			//Get Aysnc Send Request Task
 			Task<ResultType> task = SendRequestAsync<ResultType, RequestType, ErrorType>(data);
 
 			try
 			{
-				//Get Result.
-				return task.Result;
+				try
+				{
+					//Get Result.
+					return task.Result;
+				}
+				catch (AggregateException e)
+				{
+					//If we catch a single Exception
+					if (e.InnerExceptions.Count == 1)
+					{
+						//Throw it
+						IEnumerator<Exception> exceptions = e.InnerExceptions.GetEnumerator();
+						exceptions.MoveNext();
+						throw exceptions.Current;
+					}
+					else
+					{
+						//Throw Aggregate if we have multiple
+						throw;
+					}
+				}
 			}
-			catch (AggregateException e)
+			catch (SerializationException)
 			{
-				//If we catch a single Exception
-				if (e.InnerExceptions.Count == 1)
-				{
-					//Throw it
-					IEnumerator<Exception> exceptions = e.InnerExceptions.GetEnumerator();
-					exceptions.MoveNext();
-					throw exceptions.Current;
-				}
-				else
-				{
-					//Throw Aggregate if we have multiple
-					throw;
-				}
+				throw new RestErrorResponseException(null, "Could not serialize response message.");
 			}
 		}
 
 		public async Task<ResultType> SendRequestAsync<ResultType, RequestType, ErrorType>(RequestType data)
-			where ResultType : RestResult
-			where RequestType : RestRequest
-			where ErrorType : RestErrorResult
+			where ResultType : RestResult, new()
+			where RequestType : RestRequest, new()
+			where ErrorType : RestErrorResult, new()
 		{
 			HttpMethod type;
 
@@ -151,9 +159,9 @@ namespace SkaCahToa.Rest
 		}
 
 		private async Task<ResultType> SendRequestAsync<ResultType, RequestType, ErrorType>(RestUrlBuilder url, HttpMethod methodType, RequestType data = null)
-			where ResultType : RestResult
-			where RequestType : RestRequest
-			where ErrorType : RestErrorResult
+			where ResultType : RestResult, new()
+			where RequestType : RestRequest, new()
+			where ErrorType : RestErrorResult, new()
 		{
 			if (Client == null)
 				Client = SetupConnection();

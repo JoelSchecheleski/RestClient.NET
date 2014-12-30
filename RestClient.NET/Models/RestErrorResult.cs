@@ -1,6 +1,9 @@
-﻿namespace SkaCahToa.Rest.Models
+﻿using System.Runtime.Serialization;
+
+namespace SkaCahToa.Rest.Models
 {
-    public abstract class RestErrorResult : RestResult
-    {
-    }
+	[DataContract]
+	public abstract class RestErrorResult : RestResult
+	{
+	}
 }

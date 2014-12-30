@@ -23,6 +23,9 @@ namespace OpenWeatherMap
 				//Use result data
 				task.Wait();
 				Console.WriteLine(task.Result.Name + " " + task.Result.TimeStamp);
+
+				Console.WriteLine("Press Any Key To Continue...");
+				Console.Read();
 			}
 		}
 	}
