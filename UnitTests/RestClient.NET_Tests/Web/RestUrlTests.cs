@@ -7,25 +7,24 @@ namespace SkaCahToa.Rest.Tests.Web
 {
 	[ExcludeFromCodeCoverage]
 	[TestClass]
-    public class RestUrlTests
-    {
-        [TestMethod]
-        public void ToStringTests()
-        {
-            Dictionary<int, string> segments = new Dictionary<int, string>();
-            segments.Add(1, "Api");
+	public class RestUrlTests
+	{
+		[TestMethod]
+		public void ToStringTests()
+		{
+			Dictionary<int, string> segments = new Dictionary<int, string>();
+			segments.Add(1, "Api");
+			segments.Add(2, "news");
 
-            Dictionary<string, string> qstring = new Dictionary<string, string>();
-            qstring.Add("sort", "newest");
+			Dictionary<string, string> qstring = new Dictionary<string, string>();
+			qstring.Add("sort", "newest");
+			qstring.Add("clientid", "reptar");
 
-            RestUrl actual = new RestUrl("http://www.slashdot.org", segments, qstring);
+			RestUrlBuilder actual = new RestUrlBuilder("http://www.slashdot.org", segments, qstring);
 
-            actual.AddSegment(2, "news");
-            actual.AddQueryStringParam("clientid", "reptar");
+			string expected = "http://www.slashdot.org/Api/news?clientid=reptar&sort=newest";
 
-            string expected = "http://www.slashdot.org/Api/news?clientid=reptar&sort=newest";
-
-            Assert.AreEqual<string>(expected, actual.ToString());
-        }
-    }
+			Assert.AreEqual<string>(expected, actual.ToString());
+		}
+	}
 }

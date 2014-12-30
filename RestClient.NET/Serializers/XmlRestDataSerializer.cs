@@ -5,10 +5,15 @@ using System.Xml.Serialization;
 
 namespace SkaCahToa.Rest.Serializers
 {
-    public class XmlRestDataSerializer : IRestDataSerializer
+	/// <summary>
+	/// RestClient.NET XML Serializer. It'll translate RestModels into XML strings.
+	/// </summary>
+	public sealed class XmlRestDataSerializer : IRestDataSerializer
 	{
-		public virtual string ToDataType<RestRequestType>(RestRequestType model)
-			where RestRequestType : RestRequest
+		#region IRestDataSerializer
+
+		public string ToDataType<RestRequestType>(RestRequestType model)
+			where RestRequestType : RestRequest, new()
 		{
 			XmlSerializer serializer = new XmlSerializer(typeof(RestRequestType));
 
@@ -18,19 +23,21 @@ namespace SkaCahToa.Rest.Serializers
 
 				return stringWriter.ToString();
 			}
-        }
+		}
 
-        public virtual RestResultType FromDataType<RestResultType>(string data)
-			where RestResultType : RestResult
+		public RestResultType FromDataType<RestResultType>(string data)
+			where RestResultType : RestResult, new()
 		{
 			XmlSerializer serializer = new XmlSerializer(typeof(RestResultType));
 
 			return (RestResultType)serializer.Deserialize(new MemoryStream(Encoding.Unicode.GetBytes(data)));
 		}
 
+		#endregion IRestDataSerializer
+
 		#region IDisposable
 
-		public virtual void Dispose()
+		public void Dispose()
 		{
 		}
 

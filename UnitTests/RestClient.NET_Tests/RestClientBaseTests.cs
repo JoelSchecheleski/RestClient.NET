@@ -8,15 +8,15 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Net;
 using System.Net.Http;
+using System.Runtime.Serialization;
 using System.Threading.Tasks;
 
 namespace SkaCahToa.Rest.Tests
 {
 	[ExcludeFromCodeCoverage]
 	[TestClass]
-    public class RestClientBaseMockTest : RestClientBase
+	public class RestClientBaseMockTest : RestClientBase
 	{
-
 		[TestMethod]
 		public void TestSendRequestThrowExceptionIfNoModelMethodIsSelected()
 		{
@@ -24,16 +24,16 @@ namespace SkaCahToa.Rest.Tests
 			{
 				SendRequest<ResultObject, RequestObject, ErrorResultObject>(null);
 			}
-			catch (AggregateException e)
+			catch (RestClientDotNetException e)
 			{
-				if (!(e.InnerException is RestClientDotNetException))
+				if (e.Message != "Http Method Type Not Supported")
 				{
 					Assert.Fail();
 				}
-				else if (e.InnerException.Message != "Http Method Type Not Supported")
-				{
-					Assert.Fail();
-				}
+			}
+			catch (Exception)
+			{
+				Assert.Fail();
 			}
 		}
 
@@ -43,7 +43,7 @@ namespace SkaCahToa.Rest.Tests
 			RequestGetObject rgo = new RequestGetObject();
 
 			MockHandler.AddFakeResponse(
-				rgo.GetModelURL(Url),
+				new RestUrlBuilder(Url, rgo),
 				HttpStatusCode.OK,
 				"{\"Field1\":\"expectedValue\"}"
 			);
@@ -53,95 +53,152 @@ namespace SkaCahToa.Rest.Tests
 			Assert.AreEqual<string>("expectedValue", result.Field1);
 		}
 
-		public RestClientBaseMockTest() : base(DataTypes.JSON)
-        {
-            MockHandler = new MockableResponseHandler();
-        }
+		[TestMethod]
+		[ExpectedException(typeof(RestErrorResponseException))]
+		public void TestSendRequestGetInvalidResponse()
+		{
+			RequestGetObject rgo = new RequestGetObject();
 
-		public RestClientBaseMockTest(DataTypes dt) : base(dt)
+			MockHandler.AddFakeResponse(
+				new RestUrlBuilder(Url, rgo),
+				HttpStatusCode.OK,
+				"{{}{{}}\"]}"
+			);
+
+			ResultObject result = SendRequest<ResultObject, RequestGetObject, ErrorResultObject>(rgo);
+		}
+
+		[TestMethod]
+		public void TestSendRequestGetErrorResponseObject()
+		{
+			RequestPostObject rpo = new RequestPostObject();
+
+			MockHandler.AddFakeResponse(
+				new RestUrlBuilder(Url, rpo),
+				HttpStatusCode.Unauthorized,
+				"{\"ErrorMessage\":\"ErrorMessageValue\"}"
+			);
+
+			try
+			{
+				ResultObject result = SendRequest<ResultObject, RequestPostObject, ErrorResultObject>(rpo);
+				Assert.Fail("Error Response Exception didn't get thrown.");
+			}
+			catch (RestErrorResponseException e)
+			{
+				Assert.IsTrue(e.Error is ErrorResultObject);
+
+				ErrorResultObject errorObject = (ErrorResultObject)e.Error;
+
+				Assert.AreEqual<string>("ErrorMessageValue", errorObject.ErrorMessage);
+			}
+		}
+
+		public RestClientBaseMockTest()
+			: base(DataTypes.JSON)
 		{
 			MockHandler = new MockableResponseHandler();
 		}
 
-		public RestClientBaseMockTest(IRestDataSerializer serializer) : base(serializer)
+		public RestClientBaseMockTest(DataTypes dt)
+			: base(dt)
+		{
+			MockHandler = new MockableResponseHandler();
+		}
+
+		public RestClientBaseMockTest(IRestDataSerializer serializer)
+			: base(serializer)
 		{
 			MockHandler = new MockableResponseHandler();
 		}
 
 		~RestClientBaseMockTest()
 		{
-			MockHandler.Dispose();
+			if (MockHandler != null)
+				MockHandler.Dispose();
 			Dispose(false);
 		}
 
-        private MockableResponseHandler MockHandler { get; set; }
+		private MockableResponseHandler MockHandler { get; set; }
 
-        protected override string Url { get { return "http://localhost/"; } }
+		protected override string Url { get { return "http://localhost/"; } }
 
-        protected override HttpClient SetupCreds(HttpClient hc)
-        {
-            return new HttpClient(MockHandler);
-        }
+		protected override HttpClient SetupConnection()
+		{
+			return new HttpClient(MockHandler);
+		}
 
-        private class RequestGetObject : RestGetRequest { }
+		[DataContract]
+		private class RequestGetObject : RestGetRequest { }
 
-        private class RequestObject : RestRequest { }
+		[DataContract]
+		private class RequestPostObject : RestPostRequest { }
 
-        private class ResultObject : RestResult
-        {
-            public string Field1 { get; set; }
-        }
+		[DataContract]
+		private class RequestObject : RestRequest { }
 
-        private class ErrorResultObject : RestErrorResult { }
+		[DataContract]
+		private class ResultObject : RestResult
+		{
+			[DataMember(Name = "Field1")]
+			public string Field1 { get; set; }
+		}
 
-        private class MockableResponseHandler : DelegatingHandler
-        {
-            private readonly Dictionary<Uri, HttpResponseMessage> MockedResponses = new Dictionary<Uri, HttpResponseMessage>();
+		[DataContract]
+		private class ErrorResultObject : RestErrorResult
+		{
+			[DataMember(Name = "ErrorMessage")]
+			public string ErrorMessage { get; set; }
+		}
 
-            public void AddFakeResponse(RestUrl uri, HttpStatusCode code, string data)
-            {
-                MockedResponses.Add(
-                    new Uri(uri.ToString()),
-                    new HttpResponseMessage(code)
-                    {
-                        Content = new ByteArrayContent(GetBytes(data))
-                    }
-                );
-            }
+		private class MockableResponseHandler : DelegatingHandler
+		{
+			private readonly Dictionary<Uri, HttpResponseMessage> MockedResponses = new Dictionary<Uri, HttpResponseMessage>();
 
-            protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, System.Threading.CancellationToken cancellationToken)
-            {
-                if (MockedResponses.ContainsKey(request.RequestUri))
-                {
-                    return Task.FromResult(MockedResponses[request.RequestUri]);
-                }
-                else
-                {
-                    return Task.FromResult(new HttpResponseMessage(HttpStatusCode.NotFound)
-                    {
-                        RequestMessage = request
-                    });
-                }
-            }
+			public void AddFakeResponse(RestUrlBuilder uri, HttpStatusCode code, string data)
+			{
+				MockedResponses.Add(
+					new Uri(uri.ToString()),
+					new HttpResponseMessage(code)
+					{
+						Content = new ByteArrayContent(GetBytes(data))
+					}
+				);
+			}
 
-            protected byte[] GetBytes(string str)
-            {
-                return System.Text.Encoding.UTF8.GetBytes(str);
-            }
-        }
-    }
+			protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, System.Threading.CancellationToken cancellationToken)
+			{
+				if (MockedResponses.ContainsKey(request.RequestUri))
+				{
+					return Task.FromResult(MockedResponses[request.RequestUri]);
+				}
+				else
+				{
+					return Task.FromResult(new HttpResponseMessage(HttpStatusCode.NotFound)
+					{
+						RequestMessage = request
+					});
+				}
+			}
+
+			protected byte[] GetBytes(string str)
+			{
+				return System.Text.Encoding.UTF8.GetBytes(str);
+			}
+		}
+	}
 
 	[ExcludeFromCodeCoverage]
 	internal class CustomSerializer : IRestDataSerializer
 	{
 		public virtual string ToDataType<RestRequestType>(RestRequestType model)
-			where RestRequestType : RestRequest
+			where RestRequestType : RestRequest, new()
 		{
 			return string.Empty;
 		}
 
 		public virtual RestResultType FromDataType<RestResultType>(string data)
-			where RestResultType : RestResult
+			where RestResultType : RestResult, new()
 		{
 			return default(RestResultType);
 		}
@@ -159,7 +216,7 @@ namespace SkaCahToa.Rest.Tests
 		public void ConstructorTestXml()
 		{
 			using (RestClientBaseMockTest mock = new RestClientBaseMockTest(RestClientBase.DataTypes.XML)) { }
-        }
+		}
 
 		[TestMethod]
 		[ExpectedException(typeof(RestClientDotNetException))]
@@ -172,6 +229,22 @@ namespace SkaCahToa.Rest.Tests
 		public void ConstructorTestCustomSerializer()
 		{
 			using (RestClientBaseMockTest mock = new RestClientBaseMockTest(new CustomSerializer())) { }
+		}
+
+		[TestMethod]
+		[ExpectedException(typeof(RestClientDotNetException))]
+		public void ConstructorTestNullCustomSerializer()
+		{
+			using (RestClientBaseMockTest mock = new RestClientBaseMockTest(null)) { }
+		}
+
+		[TestMethod]
+		public void SafeDoubleDispose()
+		{
+			using (RestClientBaseMockTest mock = new RestClientBaseMockTest(new CustomSerializer()))
+			{
+				mock.Dispose();
+			}
 		}
 	}
 }

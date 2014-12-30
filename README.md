@@ -1,13 +1,10 @@
-﻿using SkaCahToa.Rest;
-using SkaCahToa.Rest.Models;
-using SkaCahToa.Rest.Models.Attributes;
-using System.Net.Http;
-using System.Runtime.Serialization;
-using System.Threading.Tasks;
-using System.Xml.Serialization;
+### RestClient.NET
 
-namespace OpenWeatherMap.RestAPI
-{
+A .NET Library aimed to simplify the writing of REST API Clients
+
+## Example
+
+```csharp
 	public class OpenWeatherMapAPI : RestClientBase
 	{
 		public OpenWeatherMapAPI()
@@ -73,4 +70,33 @@ namespace OpenWeatherMap.RestAPI
 		{
 		}
 	}
+
+using (OpenWeatherMapAPI api = new OpenWeatherMapAPI())
+{
+	//Make a Sync call.
+	OpenWeatherMapAPI.WeatherResult result = api.GetWeather("London,Ca");
+	//Use result data
+	Console.WriteLine(result.Name + " " + result.TimeStamp);
+	//Make an Async call.
+	Task<OpenWeatherMapAPI.WeatherResult> task = api.GetWeatherAsync("Fenton,Mi");
+	//do other stuff
+	Console.WriteLine("OtherStuff");
+	//Use result data
+	task.Wait();
+	Console.WriteLine(task.Result.Name + " " + task.Result.TimeStamp);
 }
+```
+
+## Release Build Status
+[![Build status](https://ci.appveyor.com/api/projects/status/x489r3qrpnuwmsq9?svg=true)](https://ci.appveyor.com/project/nathanmentley/restclient-net-837)
+
+Release Builds are available here: https://ci.appveyor.com/project/nathanmentley/restclient-net-837
+
+## Development Build Status
+[![Build status](https://ci.appveyor.com/api/projects/status/bxb9rrvrs5mmtigm?svg=true)](https://ci.appveyor.com/project/nathanmentley/restclient-net)
+
+Bleeding Edge builds are available here: https://ci.appveyor.com/project/nathanmentley/restclient-net
+
+## License
+
+RestClient.NET is released under the MIT License: https://tldrlegal.com/license/mit-license

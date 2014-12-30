@@ -3,31 +3,40 @@ using SkaCahToa.Rest.Models;
 using SkaCahToa.Rest.Serializers;
 using SkaCahToa.Rest.Web;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Net.Http;
+using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace SkaCahToa.Rest
 {
-    public abstract class RestClientBase : IDisposable
-    {
-        public enum DataTypes
-        {
+	/// <summary>
+	/// Abstract Base RestClient Class
+	/// </summary>
+	public abstract class RestClientBase : IDisposable
+	{
+		public enum DataTypes
+		{
 			NotImplemented,
-            JSON,
-            XML
-        }
+			JSON,
+			XML
+		}
 
 		#region Properties
 
+		/// <summary>
+		/// Last Error Response
+		/// </summary>
 		protected RestErrorResult LastError { get; private set; }
 
-		protected IRestDataSerializer DataSerializer { get; private set; }
+		/// <summary>
+		/// DataSerializer To Convert Model
+		/// </summary>
+		private IRestDataSerializer DataSerializer { get; set; }
 
-		protected HttpClient Client { get; set; }
-
-		protected abstract string Url { get; }
+		private HttpClient Client { get; set; }
 
 		private bool Disposed { get; set; }
 
@@ -35,29 +44,31 @@ namespace SkaCahToa.Rest
 
 		#region Constructors
 
-		public RestClientBase(DataTypes dataType) : this()
-        {
-            switch (dataType)
-            {
-                case DataTypes.JSON:
-                    DataSerializer = new JsonRestDataSerializer();
-                    break;
+		public RestClientBase(DataTypes dataType)
+			: this()
+		{
+			switch (dataType)
+			{
+				case DataTypes.JSON:
+					DataSerializer = new JsonRestDataSerializer();
+					break;
 
-                case DataTypes.XML:
-                    DataSerializer = new XmlRestDataSerializer();
-                    break;
+				case DataTypes.XML:
+					DataSerializer = new XmlRestDataSerializer();
+					break;
 
-                default:
-                    throw new Exceptions.RestClientDotNetException("DataType Not Supported.");
-            }
-        }
+				default:
+					throw new Exceptions.RestClientDotNetException("DataType Not Supported.");
+			}
+		}
 
-        public RestClientBase(IRestDataSerializer serializer) : this()
-        {
-            if (serializer == null)
-                throw new Exceptions.RestClientDotNetException("Serializer cannot be null");
-            DataSerializer = serializer;
-        }
+		public RestClientBase(IRestDataSerializer serializer)
+			: this()
+		{
+			if (serializer == null)
+				throw new Exceptions.RestClientDotNetException("Serializer cannot be null");
+			DataSerializer = serializer;
+		}
 
 		private RestClientBase()
 		{
@@ -72,86 +83,132 @@ namespace SkaCahToa.Rest
 
 		#endregion Constructors
 
-		protected abstract HttpClient SetupCreds(HttpClient hc);
+		#region Abstract Members
 
-        protected ResultType SendRequest<ResultType, RequestType, ErrorType>(RequestType data)
-            where ResultType : RestResult
-            where RequestType : RestRequest
-            where ErrorType : RestErrorResult
-        {
-            Task<ResultType> task = SendRequestAsync<ResultType, RequestType, ErrorType>(data);
+		/// <summary>
+		/// Builds a HttpClient with Credentials Setups
+		/// </summary>
+		protected abstract HttpClient SetupConnection();
 
-            return task.Result;
-        }
+		/// <summary>
+		/// Rest API Endpoint URL
+		/// </summary>
+		protected abstract string Url { get; }
 
-        protected async Task<ResultType> SendRequestAsync<ResultType, RequestType, ErrorType>(RequestType data)
-            where ResultType : RestResult
-            where RequestType : RestRequest
-            where ErrorType : RestErrorResult
-        {
-            HttpMethod type;
+		#endregion Abstract Members
 
-            if (data is RestPostRequest)
-                type = HttpMethod.Post;
-            else if (data is RestGetRequest)
-                type = HttpMethod.Get;
-            else
-                throw new Exceptions.RestClientDotNetException("Http Method Type Not Supported");
+		public ResultType SendRequest<ResultType, RequestType, ErrorType>(RequestType data)
+			where ResultType : RestResult, new()
+			where RequestType : RestRequest, new()
+			where ErrorType : RestErrorResult, new()
+		{
+			//Get Aysnc Send Request Task
+			Task<ResultType> task = SendRequestAsync<ResultType, RequestType, ErrorType>(data);
 
-            return await SendRequestAsync<ResultType, RequestType, ErrorType>(
-                data.GetModelURL(Url),
-                type,
-                (type != HttpMethod.Get ? data : null)
-            ).ConfigureAwait(false);
-        }
+			try
+			{
+				try
+				{
+					//Get Result.
+					return task.Result;
+				}
+				catch (AggregateException e)
+				{
+					//If we catch a single Exception
+					if (e.InnerExceptions.Count == 1)
+					{
+						//Throw it
+						IEnumerator<Exception> exceptions = e.InnerExceptions.GetEnumerator();
+						exceptions.MoveNext();
+						throw exceptions.Current;
+					}
+					else
+					{
+						//Throw Aggregate if we have multiple
+						throw;
+					}
+				}
+			}
+			catch (SerializationException)
+			{
+				throw new RestErrorResponseException(null, "Could not serialize response message.");
+			}
+		}
 
-        private async Task<ResultType> SendRequestAsync<ResultType, RequestType, ErrorType>(RestUrl url, HttpMethod methodType, RequestType data = null)
-            where ResultType : RestResult
-            where RequestType : RestRequest
-            where ErrorType : RestErrorResult
-        {
+		public async Task<ResultType> SendRequestAsync<ResultType, RequestType, ErrorType>(RequestType data)
+			where ResultType : RestResult, new()
+			where RequestType : RestRequest, new()
+			where ErrorType : RestErrorResult, new()
+		{
+			HttpMethod type;
+
+			//Get Method Type from Model
+			if (data is RestPostRequest)
+				type = HttpMethod.Post;
+			else if (data is RestGetRequest)
+				type = HttpMethod.Get;
+			else
+				throw new Exceptions.RestClientDotNetException("Http Method Type Not Supported");
+
+			//Send Request
+			return await SendRequestAsync<ResultType, RequestType, ErrorType>(
+				new RestUrlBuilder(Url, data),
+				type,
+				(type != HttpMethod.Get ? data : null)
+			).ConfigureAwait(false);
+		}
+
+		private async Task<ResultType> SendRequestAsync<ResultType, RequestType, ErrorType>(RestUrlBuilder url, HttpMethod methodType, RequestType data = null)
+			where ResultType : RestResult, new()
+			where RequestType : RestRequest, new()
+			where ErrorType : RestErrorResult, new()
+		{
 			if (Client == null)
-				Client = SetupCreds(new HttpClient());
+				Client = SetupConnection();
 
-            HttpRequestMessage request = new HttpRequestMessage(methodType, url.ToString());
+			HttpRequestMessage request = new HttpRequestMessage(methodType, url.ToString());
 
-            if (data != null)
-            {
-                using (MemoryStream stream = new MemoryStream(
-                    Encoding.Unicode.GetBytes(
-                        DataSerializer.ToDataType<RequestType>(data))))
-                {
-                    request.Content = new StreamContent(stream);
-                }
-            }
+			//Push data to request stream
+			if (data != null)
+			{
+				using (MemoryStream stream = new MemoryStream(
+					Encoding.Unicode.GetBytes(
+						DataSerializer.ToDataType<RequestType>(data))))
+				{
+					request.Content = new StreamContent(stream);
+				}
+			}
 
-            HttpResponseMessage response = await Client.SendAsync(request).ConfigureAwait(false);
+			//Wait for request
+			HttpResponseMessage response = await Client.SendAsync(request).ConfigureAwait(false);
 
-            if (response.IsSuccessStatusCode)
-            {
-                try
-                {
-                    return DataSerializer.FromDataType<ResultType>(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
-                }
-                catch (Exception)
-                {
-                    throw;
-                }
-            }
-            else
-            {
-                try
-                {
-                    LastError = DataSerializer.FromDataType<ErrorType>(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
+			if (response.IsSuccessStatusCode)
+			{
+				try
+				{
+					//Get response as RestResponseModel
+					return DataSerializer.FromDataType<ResultType>(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
+				}
+				catch (Exception)
+				{
+					throw;
+				}
+			}
+			else
+			{
+				try
+				{
+					//If result wasn't successful create error response model
+					LastError = DataSerializer.FromDataType<ErrorType>(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
 
-                    throw new RestErrorResponseException(LastError, "request returned: " + response.StatusCode.ToString());
-                }
-                catch (Exception)
-                {
-                    throw;
-                }
-            }
-        }
+					throw new RestErrorResponseException(LastError, "request returned: " + response.StatusCode.ToString());
+				}
+				catch (Exception)
+				{
+					throw;
+				}
+			}
+		}
 
 		#region IDisposable
 
@@ -163,19 +220,16 @@ namespace SkaCahToa.Rest
 
 		protected virtual void Dispose(bool disposing)
 		{
-			if (!Disposed)
-			{
-				if (disposing)
-				{
-				}
+			if (Disposed)
+				return;
 
-				if (Client != null)
-					Client.Dispose();
+			if (Client != null)
+				Client.Dispose();
 
+			if (DataSerializer != null)
 				DataSerializer.Dispose();
 
-				Disposed = true;
-			}
+			Disposed = true;
 		}
 
 		#endregion IDisposable
