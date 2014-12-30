@@ -1,6 +1,6 @@
 ### RestClient.NET
 
-A .NET Library aimed to simplify writing REST API Clients.
+A .NET Library aimed to simplify the writing of REST API Clients
 
 ## Example
 
@@ -86,6 +86,16 @@ using (OpenWeatherMapAPI api = new OpenWeatherMapAPI())
 	Console.WriteLine(task.Result.Name + " " + task.Result.TimeStamp);
 }
 ```
+
+## Release Build Status
+[![Build status](https://ci.appveyor.com/api/projects/status/x489r3qrpnuwmsq9?svg=true)](https://ci.appveyor.com/project/nathanmentley/restclient-net-837)
+
+Release Builds are available here: https://ci.appveyor.com/project/nathanmentley/restclient-net-837
+
+## Development Build Status
+[![Build status](https://ci.appveyor.com/api/projects/status/bxb9rrvrs5mmtigm?svg=true)](https://ci.appveyor.com/project/nathanmentley/restclient-net)
+
+Bleeding Edge builds are available here: https://ci.appveyor.com/project/nathanmentley/restclient-net
 
 ## License
 
