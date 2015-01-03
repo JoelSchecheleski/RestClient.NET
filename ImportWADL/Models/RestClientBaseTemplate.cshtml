@@ -1,0 +1,86 @@
+﻿using SkaCahToa.Rest;
+using SkaCahToa.Rest.Models;
+using SkaCahToa.Rest.Models.Attributes;
+using System.Net.Http;
+using System.Runtime.Serialization;
+using System.Threading.Tasks;
+using System.Xml.Serialization;
+
+namespace @Model.NameSpace
+{
+	public class @Model.ClassName : RestClientBase
+	{
+	public  @(Model.ClassName)()
+	: base(DataTypes.@Model.DataType)
+	{
+	}
+
+	protected override string Url
+	{
+	get
+	{
+	return "@Model.WADL.BaseURL";
+	}
+	}
+
+	protected override HttpClient SetupConnection()
+	{
+	return new HttpClient();
+	}
+
+	@foreach (var models in Model.WADL.Resources)
+	{
+		var method = models.method;
+		var request = method.request;
+		<text>
+			[DataContract]
+			[SegmentDef(1, UrlDefinitionDataTypes.Static, "@models.Path")]
+			[SegmentDef(2, UrlDefinitionDataTypes.Static, "@method.Id")]
+			@foreach (var queryParam in request.Params)
+			{
+				if (queryParam.Style == "query")
+				{
+					<text>[ParameterDef("@queryParam.Name", UrlDefinitionDataTypes.Data, "@queryParam.Name")]</text>
+				}
+			}
+			public class @(models.Path)@(method.Name)Request : @(method.Name == "GET" ? "RestGetRequest" : "RestPostRequest")
+			{
+			@foreach (var param in request.Params)
+			{
+				<text>public @(param.Type == "xsd:string" ? "string" : "int") @param.Name { get; set; }</text>
+			}
+			}
+
+			@foreach (var response in method.response)
+			{
+				<text>
+					[DataContract]
+					public class @(models.Path)@(method.Name)@(response.Status == 200 ? string.Empty : "Error")Result : @(response.Status == 200 ? "RestResult" : "RestErrorResult")
+					{
+
+					}
+				</text>
+			}
+			public @(models.Path)@(method.Name)Result @(models.Path)@(method.Name)(@(models.Path)@(method.Name)Request request)
+			{
+			return SendRequest<
+			@(models.Path)@(method.Name)Result,
+			@(models.Path)@(method.Name)Request,
+			@(models.Path)@(method.Name)ErrorResult>
+			(request);
+			}
+			public
+			Task<
+			@(models.Path)@(method.Name)Result>
+			@(models.Path)@(method.Name)Async(@(models.Path)@(method.Name)Request request)
+			{
+			return SendRequestAsync<
+			@(models.Path)@(method.Name)Result,
+			@(models.Path)@(method.Name)Request,
+			@(models.Path)@(method.Name)ErrorResult>
+			(request);
+			}
+		</text>
+	}
+	}
+	}
