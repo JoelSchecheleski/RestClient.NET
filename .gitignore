@@ -24,6 +24,9 @@ UnitTests/RestClient.NET_Tests/bin/
 UnitTests/RestClient.NET_Tests/obj/
 RestClient.NET/bin/
 RestClient.NET/obj/
+ImportWADL/bin/
+ImportWADL/obj/
+.vs/RestClient.NET/v14/vbcs.cache/
 *.suo
 *.user
 
@@ -54,3 +57,4 @@ Icon
 Network Trash Folder
 Temporary Items
 .apdisk
+
