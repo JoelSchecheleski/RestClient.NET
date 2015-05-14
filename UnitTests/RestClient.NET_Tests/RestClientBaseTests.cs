@@ -24,9 +24,9 @@ namespace SkaCahToa.Rest.Tests
 			{
 				SendRequest<ResultObject, RequestObject, ErrorResultObject>(null);
 			}
-			catch (RestClientDotNetException e)
-			{
-				if (e.Message != "Http Method Type Not Supported")
+			catch (ArgumentException e)
+            {
+				if (e.Message != "Request Model cannot be null\r\nParameter name: data" || e.ParamName != "data")
 				{
 					Assert.Fail();
 				}
@@ -135,7 +135,13 @@ namespace SkaCahToa.Rest.Tests
 		private class RequestPostObject : RestPostRequest { }
 
 		[DataContract]
-		private class RequestObject : RestRequest { }
+		private class RequestObject : RestRequest
+        {
+            internal override HttpMethod GetHttpMethodType()
+            {
+                throw new NotImplementedException();
+            }
+        }
 
 		[DataContract]
 		private class ResultObject : RestResult
@@ -216,13 +222,6 @@ namespace SkaCahToa.Rest.Tests
 		public void ConstructorTestXml()
 		{
 			using (RestClientBaseMockTest mock = new RestClientBaseMockTest(RestClientBase.DataTypes.XML)) { }
-		}
-
-		[TestMethod]
-		[ExpectedException(typeof(RestClientDotNetException))]
-		public void ConstructorTestInvalidDataType()
-		{
-			using (RestClientBaseMockTest mock = new RestClientBaseMockTest(RestClientBase.DataTypes.NotImplemented)) { }
 		}
 
 		[TestMethod]

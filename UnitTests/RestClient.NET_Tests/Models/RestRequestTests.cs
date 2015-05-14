@@ -4,6 +4,7 @@ using SkaCahToa.Rest.Models.Attributes;
 using SkaCahToa.Rest.Web;
 using System;
 using System.Diagnostics.CodeAnalysis;
+using System.Net.Http;
 
 namespace SkaCahToa.Rest.Tests.Models
 {
@@ -18,7 +19,12 @@ namespace SkaCahToa.Rest.Tests.Models
 		[ParameterDef("TimeStamp", UrlDefinitionDataTypes.Data, "CurrentTimeStamp")]
 		private class TestRestRequestUrl : RestRequest
 		{
-			public string CurrentTimeStamp { get { return DateTime.MinValue.ToString(); } }
+            internal override HttpMethod GetHttpMethodType()
+            {
+                throw new NotImplementedException();
+            }
+
+            public string CurrentTimeStamp { get { return DateTime.MinValue.ToString(); } }
 
 			public string MiddleName { get; set; }
 		}
@@ -28,10 +34,13 @@ namespace SkaCahToa.Rest.Tests.Models
 		[SegmentDef(2, UrlDefinitionDataTypes.Data, "MiddleName")]
 		[ParameterDef("show", UrlDefinitionDataTypes.Static, "Arrested Development")]
 		[ParameterDef("TimeStamp", UrlDefinitionDataTypes.Data, "CurrentTimeStamp")]
-		[ParameterDef("t", UrlDefinitionDataTypes.NotImplemented, "nDashA")]
 		private class TestRestRequestUrlException : RestRequest
-		{
-			public string CurrentTimeStamp { get { return DateTime.MinValue.ToString(); } }
+        {
+            internal override HttpMethod GetHttpMethodType()
+            {
+                throw new NotImplementedException();
+            }
+            public string CurrentTimeStamp { get { return DateTime.MinValue.ToString(); } }
 
 			public string MiddleName { get; set; }
 		}
@@ -48,18 +57,6 @@ namespace SkaCahToa.Rest.Tests.Models
 			string actual = new RestUrlBuilder("http://www.google.com/", trru).ToString();
 
 			Assert.AreEqual<string>(expected, actual);
-		}
-
-		[TestMethod]
-		[ExpectedException(typeof(Exceptions.RestClientDotNetException))]
-		public void GetModelUrlThrowExceptionNotImplemented()
-		{
-			TestRestRequestUrlException trrue = new TestRestRequestUrlException()
-			{
-				MiddleName = string.Empty
-			};
-
-			string actual = new RestUrlBuilder("http://www.google.com/", trrue).ToString();
 		}
 	}
 }

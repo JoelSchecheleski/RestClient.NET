@@ -4,6 +4,7 @@ using SkaCahToa.Rest.Models;
 using SkaCahToa.Rest.Serializers;
 using System;
 using System.Diagnostics.CodeAnalysis;
+using System.Net.Http;
 
 namespace SkaCahToa.Rest.Tests.Serializers
 {
@@ -13,8 +14,13 @@ namespace SkaCahToa.Rest.Tests.Serializers
 	{
 		[Serializable]
 		public class XmlTestObject : RestRequest
-		{
-			public string field1 { get; set; }
+        {
+            internal override HttpMethod GetHttpMethodType()
+            {
+                throw new NotImplementedException();
+            }
+
+            public string field1 { get; set; }
 
 			public int field2 { get; set; }
 

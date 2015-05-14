@@ -18,7 +18,7 @@ namespace ImportWADL
 
 			string code = wadl.CreateRestClientDotNetClass(SkaCahToa.Rest.RestClientBase.DataTypes.JSON, "testClassName", "SkaCahToa.Rest.CustomApis");
 
-			using (System.IO.StreamWriter file = new System.IO.StreamWriter(@"C:\WriteLines2.txt"))
+			using (System.IO.StreamWriter file = new System.IO.StreamWriter(@"WriteLines2.txt"))
 			{
 				file.Write(code);
 			}

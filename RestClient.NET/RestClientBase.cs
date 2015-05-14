@@ -19,18 +19,12 @@ namespace SkaCahToa.Rest
 	{
 		public enum DataTypes
 		{
-			NotImplemented,
 			JSON,
 			XML
 		}
 
 		#region Properties
-
-		/// <summary>
-		/// Last Error Response
-		/// </summary>
-		protected RestErrorResult LastError { get; private set; }
-
+        
 		/// <summary>
 		/// DataSerializer To Convert Model
 		/// </summary>
@@ -140,36 +134,19 @@ namespace SkaCahToa.Rest
 			where RequestType : RestRequest, new()
 			where ErrorType : RestErrorResult, new()
 		{
-			HttpMethod type;
+            if (data == null)
+                throw new ArgumentException("Request Model cannot be null", "data");
 
-			//Get Method Type from Model
-			if (data is RestPostRequest)
-				type = HttpMethod.Post;
-			else if (data is RestGetRequest)
-				type = HttpMethod.Get;
-			else
-				throw new Exceptions.RestClientDotNetException("Http Method Type Not Supported");
-
-			//Send Request
-			return await SendRequestAsync<ResultType, RequestType, ErrorType>(
-				new RestUrlBuilder(Url, data),
-				type,
-				(type != HttpMethod.Get ? data : null)
-			).ConfigureAwait(false);
-		}
-
-		private async Task<ResultType> SendRequestAsync<ResultType, RequestType, ErrorType>(RestUrlBuilder url, HttpMethod methodType, RequestType data = null)
-			where ResultType : RestResult, new()
-			where RequestType : RestRequest, new()
-			where ErrorType : RestErrorResult, new()
-		{
 			if (Client == null)
 				Client = SetupConnection();
 
-			HttpRequestMessage request = new HttpRequestMessage(methodType, url.ToString());
+			HttpRequestMessage request = new HttpRequestMessage(
+                data.GetHttpMethodType(),
+                (new RestUrlBuilder(Url, data)).ToString()
+            );
 
 			//Push data to request stream
-			if (data != null)
+			if (DoesHttpMethodTypeSupportBodyData(data.GetHttpMethodType()))
 			{
 				using (MemoryStream stream = new MemoryStream(
 					Encoding.Unicode.GetBytes(
@@ -187,7 +164,9 @@ namespace SkaCahToa.Rest
 				try
 				{
 					//Get response as RestResponseModel
-					return DataSerializer.FromDataType<ResultType>(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
+					return DataSerializer.FromDataType<ResultType>(
+                        await response.Content.ReadAsStringAsync().ConfigureAwait(false)
+                    );
 				}
 				catch (Exception)
 				{
@@ -198,10 +177,12 @@ namespace SkaCahToa.Rest
 			{
 				try
 				{
-					//If result wasn't successful create error response model
-					LastError = DataSerializer.FromDataType<ErrorType>(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
-
-					throw new RestErrorResponseException(LastError, "request returned: " + response.StatusCode.ToString());
+					throw new RestErrorResponseException(
+                        DataSerializer.FromDataType<ErrorType>(
+                            await response.Content.ReadAsStringAsync().ConfigureAwait(false)
+                        ),
+                        "request returned: " + response.StatusCode.ToString()
+                    );
 				}
 				catch (Exception)
 				{
@@ -209,6 +190,11 @@ namespace SkaCahToa.Rest
 				}
 			}
 		}
+        
+        protected virtual bool DoesHttpMethodTypeSupportBodyData(HttpMethod type)
+        {
+            return (type == HttpMethod.Post || type == HttpMethod.Put);
+        }
 
 		#region IDisposable
 

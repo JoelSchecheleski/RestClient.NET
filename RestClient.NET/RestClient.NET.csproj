@@ -48,9 +48,11 @@
     <Compile Include="Models\Attributes\ParameterDef.cs" />
     <Compile Include="Models\Attributes\SegmentDef.cs" />
     <Compile Include="Models\Attributes\UrlDefinitionBase.cs" />
+    <Compile Include="Models\RestDeleteRequest.cs" />
     <Compile Include="Models\RestErrorResult.cs" />
     <Compile Include="Models\RestGetRequest.cs" />
     <Compile Include="Models\RestPostRequest.cs" />
+    <Compile Include="Models\RestPutRequest.cs" />
     <Compile Include="Models\RestRequest.cs" />
     <Compile Include="Models\RestResult.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -59,9 +61,6 @@
     <Compile Include="Serializers\IRestDataSerializer.cs" />
     <Compile Include="Serializers\XmlRestDataSerializer.cs" />
     <Compile Include="Web\RestUrlBuilder.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

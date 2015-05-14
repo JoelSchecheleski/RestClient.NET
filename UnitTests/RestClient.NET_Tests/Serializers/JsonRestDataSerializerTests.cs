@@ -2,7 +2,9 @@
 using SkaCahToa.Rest.Models;
 using SkaCahToa.Rest.Models.Attributes;
 using SkaCahToa.Rest.Serializers;
+using System;
 using System.Diagnostics.CodeAnalysis;
+using System.Net.Http;
 using System.Runtime.Serialization;
 
 namespace SkaCahToa.Rest.Tests.Serializers
@@ -13,8 +15,13 @@ namespace SkaCahToa.Rest.Tests.Serializers
 	{
 		[DataContract]
 		private class JSONTestObject : RestRequest
-		{
-			[DataMember(Name = "field1")]
+        {
+            internal override HttpMethod GetHttpMethodType()
+            {
+                throw new NotImplementedException();
+            }
+
+            [DataMember(Name = "field1")]
 			public string field1 { get; set; }
 
 			[DataMember(Name = "field2")]

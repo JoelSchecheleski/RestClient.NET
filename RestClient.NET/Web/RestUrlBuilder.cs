@@ -88,11 +88,13 @@ namespace SkaCahToa.Rest.Web
 			QueryString.AddSafe(key, value);
 		}
 
-		/// <summary>
-		/// Get Current Configured Url
-		/// </summary>
-		/// <returns>Current Rest Request Url</returns>
-		public override string ToString()
+        #region Overrides
+
+        /// <summary>
+        /// Get Current Configured Url
+        /// </summary>
+        /// <returns>Current Rest Request Url</returns>
+        public override string ToString()
 		{
 			string url = BaseUrl;
 
@@ -106,5 +108,7 @@ namespace SkaCahToa.Rest.Web
 
 			return url;
 		}
-	}
+
+        #endregion Overrides
+    }
 }

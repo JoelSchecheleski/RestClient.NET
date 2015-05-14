@@ -16,7 +16,7 @@ namespace SkaCahToa.Rest.Serializers
 			where RestRequestType : RestRequest, new()
 		{
 			XmlSerializer serializer = new XmlSerializer(typeof(RestRequestType));
-
+            
 			using (StringWriter stringWriter = new StringWriter())
 			{
 				serializer.Serialize(stringWriter, model);

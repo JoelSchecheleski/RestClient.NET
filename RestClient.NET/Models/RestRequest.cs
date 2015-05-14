@@ -1,7 +1,4 @@
-﻿using SkaCahToa.Rest.Models.Attributes;
-using SkaCahToa.Rest.Web;
-using System.Linq;
-using System.Reflection;
+﻿using System.Net.Http;
 using System.Runtime.Serialization;
 
 namespace SkaCahToa.Rest.Models
@@ -9,5 +6,6 @@ namespace SkaCahToa.Rest.Models
 	[DataContract]
 	public abstract class RestRequest
 	{
-	}
+        internal abstract HttpMethod GetHttpMethodType();
+    }
 }

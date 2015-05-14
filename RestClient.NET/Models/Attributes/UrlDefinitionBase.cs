@@ -7,11 +7,13 @@ namespace SkaCahToa.Rest.Models.Attributes
 	/// </summary>
 	public enum UrlDefinitionDataTypes
 	{
-		NotImplemented,
 		Static,
 		Data
 	}
 
+    /// <summary>
+    /// Base Attribute Type for defining Request Urls. Should be used on Request POCOs.
+    /// </summary>
 	public abstract class UrlDefinitionBase : Attribute
 	{
 		#region Properties
