@@ -60,6 +60,7 @@
     <Compile Include="Serializers\JsonRestDataSerializer.cs" />
     <Compile Include="Serializers\IRestDataSerializer.cs" />
     <Compile Include="Serializers\XmlRestDataSerializer.cs" />
+    <Compile Include="Utils\IRestClientLogger.cs" />
     <Compile Include="Web\RestUrlBuilder.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />

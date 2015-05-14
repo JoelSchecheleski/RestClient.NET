@@ -1,6 +1,7 @@
 ﻿using SkaCahToa.Rest.Exceptions;
 using SkaCahToa.Rest.Models;
 using SkaCahToa.Rest.Serializers;
+using SkaCahToa.Rest.Utils;
 using SkaCahToa.Rest.Web;
 using System;
 using System.Collections.Generic;
@@ -30,42 +31,32 @@ namespace SkaCahToa.Rest
 		/// </summary>
 		private IRestDataSerializer DataSerializer { get; set; }
 
-		private HttpClient Client { get; set; }
+        private IRestClientLogger Logger { get; set; }
+
+        private HttpClient Client { get; set; }
 
 		private bool Disposed { get; set; }
 
 		#endregion Properties
 
 		#region Constructors
-
-		public RestClientBase(DataTypes dataType)
-			: this()
+        
+		public RestClientBase(DataTypes dataType, IRestClientLogger logger = null)
+			: this(dataType == DataTypes.JSON ? (IRestDataSerializer)new JsonRestDataSerializer() : (IRestDataSerializer)new XmlRestDataSerializer(), logger)
 		{
-			switch (dataType)
-			{
-				case DataTypes.JSON:
-					DataSerializer = new JsonRestDataSerializer();
-					break;
-
-				case DataTypes.XML:
-					DataSerializer = new XmlRestDataSerializer();
-					break;
-
-				default:
-					throw new Exceptions.RestClientDotNetException("DataType Not Supported.");
-			}
 		}
 
-		public RestClientBase(IRestDataSerializer serializer)
-			: this()
+		public RestClientBase(IRestDataSerializer serializer, IRestClientLogger logger = null)
+			: this(logger)
 		{
 			if (serializer == null)
 				throw new Exceptions.RestClientDotNetException("Serializer cannot be null");
 			DataSerializer = serializer;
 		}
 
-		private RestClientBase()
+		private RestClientBase(IRestClientLogger logger)
 		{
+            Logger = logger;
 			Disposed = false;
 			Client = null;
 		}
@@ -168,9 +159,11 @@ namespace SkaCahToa.Rest
                         await response.Content.ReadAsStringAsync().ConfigureAwait(false)
                     );
 				}
-				catch (Exception)
-				{
-					throw;
+				catch (Exception e)
+                {
+                    if(Logger != null)
+                        Logger.LogException(e);
+                    throw;
 				}
 			}
 			else
@@ -184,9 +177,11 @@ namespace SkaCahToa.Rest
                         "request returned: " + response.StatusCode.ToString()
                     );
 				}
-				catch (Exception)
+				catch (Exception e)
 				{
-					throw;
+                    if (Logger != null)
+                        Logger.LogException(e);
+                    throw;
 				}
 			}
 		}
